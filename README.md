@@ -18,7 +18,7 @@ Example code for using proxy servers in different programming languages. Current
 
 ## Ruby Proxy Examples
 
-* requests_proxy
+* [requests_proxy](https://github.com/proxymesh/proxy-examples/blob/main/ruby/requests_proxy.rb) from [rpolley](https://github.com/rpolley)
 
 ## Contributing
 
