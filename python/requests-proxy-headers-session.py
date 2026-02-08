@@ -2,26 +2,39 @@
 """
 Requests with proxy headers - Session example.
 
-This example shows how to use ProxySession for connection pooling
-and making multiple requests with the same proxy header configuration.
+Configuration via environment variables:
+    PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER    - Header name to send to proxy (optional)
+    PROXY_VALUE     - Header value to send to proxy (optional)
+    RESPONSE_HEADER - Header name to read from response (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
-Docs: https://python-proxy-headers.readthedocs.io/en/latest/requests.html
 """
+import os
+import sys
 from python_proxy_headers.requests_adapter import ProxySession
 
-proxies = {
-    'http': 'http://USERNAME:PASSWORD@PROXYHOST:PORT',
-    'https': 'http://USERNAME:PASSWORD@PROXYHOST:PORT'
-}
+# Get configuration from environment
+proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
+if not proxy_url:
+    print("Error: Set PROXY_URL environment variable", file=sys.stderr)
+    sys.exit(1)
 
-# Create a session with proxy header support
-with ProxySession(proxy_headers={'X-ProxyMesh-Country': 'US'}) as session:
+test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
+proxy_header = os.environ.get('PROXY_HEADER')
+proxy_value = os.environ.get('PROXY_VALUE')
+response_header = os.environ.get('RESPONSE_HEADER')
+
+proxies = {'http': proxy_url, 'https': proxy_url}
+proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
+
+# Make requests using session
+with ProxySession(proxy_headers=proxy_headers) as session:
     session.proxies = proxies
     
-    # Make multiple requests with the same session
-    r1 = session.get('https://api.ipify.org?format=json')
-    print(f"Request 1 - IP: {r1.json()['ip']}, Proxy IP: {r1.headers.get('X-ProxyMesh-IP')}")
-    
-    r2 = session.get('https://httpbin.org/headers')
-    print(f"Request 2 - Status: {r2.status_code}")
+    response = session.get(test_url)
+    print(f"Status: {response.status_code}")
+    print(f"Body: {response.text}")
+    if response_header:
+        print(f"{response_header}: {response.headers.get(response_header)}")

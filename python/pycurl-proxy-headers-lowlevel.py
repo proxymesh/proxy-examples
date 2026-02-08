@@ -2,43 +2,56 @@
 """
 PycURL with proxy headers - low-level example.
 
-This example shows how to add proxy header support to existing pycurl code
-using the low-level helper functions from python-proxy-headers.
+Configuration via environment variables:
+    PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER    - Header name to send to proxy (optional)
+    PROXY_VALUE     - Header value to send to proxy (optional)
+    RESPONSE_HEADER - Header name to read from response (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
-Docs: https://python-proxy-headers.readthedocs.io/en/latest/pycurl.html
 """
+import os
+import sys
 import pycurl
 from io import BytesIO
 from python_proxy_headers.pycurl_proxy import set_proxy_headers, HeaderCapture
 
-# Create a pycurl handle
+# Get configuration from environment
+proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
+if not proxy_url:
+    print("Error: Set PROXY_URL environment variable", file=sys.stderr)
+    sys.exit(1)
+
+test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
+proxy_header = os.environ.get('PROXY_HEADER')
+proxy_value = os.environ.get('PROXY_VALUE')
+response_header = os.environ.get('RESPONSE_HEADER')
+
+proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
+
+# Create pycurl handle
 c = pycurl.Curl()
 buffer = BytesIO()
 
-# Configure the request
-c.setopt(pycurl.URL, 'https://api.ipify.org?format=json')
-c.setopt(pycurl.PROXY, 'http://USERNAME:PASSWORD@PROXYHOST:PORT')
+c.setopt(pycurl.URL, test_url)
+c.setopt(pycurl.PROXY, proxy_url)
 c.setopt(pycurl.WRITEDATA, buffer)
 
-# Add custom headers to send to the proxy
-set_proxy_headers(c, {'X-ProxyMesh-Country': 'US'})
+# Add proxy headers if configured
+if proxy_headers:
+    set_proxy_headers(c, proxy_headers)
 
-# Capture response headers (installs HEADERFUNCTION callback)
+# Capture response headers
 capture = HeaderCapture(c)
 
-# Perform the request
+# Perform request
 c.perform()
 
-# Print results
+# Output
 print(f"Status: {c.getinfo(pycurl.RESPONSE_CODE)}")
 print(f"Body: {buffer.getvalue().decode('utf-8')}")
-
-# Access headers from the proxy's CONNECT response
-print(f"Proxy headers: {capture.proxy_headers}")
-print(f"Proxy IP: {capture.proxy_headers.get('X-ProxyMesh-IP')}")
-
-# Access headers from the origin server
-print(f"Origin headers: {capture.origin_headers}")
+if response_header:
+    print(f"{response_header}: {capture.proxy_headers.get(response_header)}")
 
 c.close()

@@ -2,34 +2,41 @@
 """
 CloudScraper with proxy headers example.
 
-This example shows how to use CloudScraper with custom proxy headers.
-CloudScraper bypasses Cloudflare protection while python-proxy-headers
-enables sending/receiving custom proxy headers.
+Configuration via environment variables:
+    PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER    - Header name to send to proxy (optional)
+    PROXY_VALUE     - Header value to send to proxy (optional)
+    RESPONSE_HEADER - Header name to read from response (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
-Docs: https://python-proxy-headers.readthedocs.io/en/latest/cloudscraper.html
 """
+import os
+import sys
 from python_proxy_headers.cloudscraper_proxy import create_scraper
 
-# Create a CloudScraper with proxy header support
-scraper = create_scraper(
-    proxy_headers={'X-ProxyMesh-Country': 'US'},
-    browser='chrome'
-)
+# Get configuration from environment
+proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
+if not proxy_url:
+    print("Error: Set PROXY_URL environment variable", file=sys.stderr)
+    sys.exit(1)
 
-# Set proxy
-scraper.proxies = {
-    'http': 'http://USERNAME:PASSWORD@PROXYHOST:PORT',
-    'https': 'http://USERNAME:PASSWORD@PROXYHOST:PORT'
-}
+test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
+proxy_header = os.environ.get('PROXY_HEADER')
+proxy_value = os.environ.get('PROXY_VALUE')
+response_header = os.environ.get('RESPONSE_HEADER')
 
-# Make request - Cloudflare bypass + proxy headers work together
-response = scraper.get('https://api.ipify.org?format=json')
+proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
 
-# Print response
+# Create scraper with proxy headers
+scraper = create_scraper(proxy_headers=proxy_headers, browser='chrome')
+scraper.proxies = {'http': proxy_url, 'https': proxy_url}
+
+# Make request
+response = scraper.get(test_url)
+
+# Output
 print(f"Status: {response.status_code}")
 print(f"Body: {response.text}")
-
-# Access proxy response headers
-proxy_ip = response.headers.get('X-ProxyMesh-IP')
-print(f"Proxy IP: {proxy_ip}")
+if response_header:
+    print(f"{response_header}: {response.headers.get(response_header)}")
