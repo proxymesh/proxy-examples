@@ -32,6 +32,9 @@ export TEST_URL='https://httpbin.org/ip'
 export PROXY_HEADER='X-ProxyMesh-Country'
 export PROXY_VALUE='US'
 
+# Optional: Read a specific header from the response
+export RESPONSE_HEADER='X-ProxyMesh-IP'
+
 # Run a single example
 python python/requests-proxy-headers.py
 

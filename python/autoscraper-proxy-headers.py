@@ -3,10 +3,11 @@
 AutoScraper with proxy headers example.
 
 Configuration via environment variables:
-    PROXY_URL    - Proxy URL (required), e.g., http://user:pass@proxy:8080
-    TEST_URL     - URL to request (default: https://api.ipify.org?format=json)
-    PROXY_HEADER - Header name to send to proxy (optional)
-    PROXY_VALUE  - Header value to send to proxy (optional)
+    PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER    - Header name to send to proxy (optional)
+    PROXY_VALUE     - Header value to send to proxy (optional)
+    RESPONSE_HEADER - Header name to read from response (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
 """
@@ -23,6 +24,7 @@ if not proxy_url:
 test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
 proxy_header = os.environ.get('PROXY_HEADER')
 proxy_value = os.environ.get('PROXY_VALUE')
+response_header = os.environ.get('RESPONSE_HEADER')
 
 proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
 
@@ -37,6 +39,7 @@ response = session.get(test_url)
 # Output
 print(f"Status: {response.status_code}")
 print(f"Body: {response.text}")
-print(f"X-ProxyMesh-IP: {response.headers.get('X-ProxyMesh-IP')}")
+if response_header:
+    print(f"{response_header}: {response.headers.get(response_header)}")
 
 scraper.close()
