@@ -2,31 +2,35 @@
 """
 Requests with proxy headers example.
 
-This example shows how to send custom headers to a proxy server and
-receive proxy response headers using the python-proxy-headers library.
+Configuration via environment variables:
+    PROXY_URL    - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL     - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER - Header name to send to proxy (optional)
+    PROXY_VALUE  - Header value to send to proxy (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
-Docs: https://python-proxy-headers.readthedocs.io/en/latest/requests.html
 """
+import os
+import sys
 from python_proxy_headers import requests_adapter
 
-proxies = {
-    # USERNAME:PASSWORD is optional if you have IP authentication
-    'http': 'http://USERNAME:PASSWORD@PROXYHOST:PORT',
-    'https': 'http://USERNAME:PASSWORD@PROXYHOST:PORT'
-}
+# Get configuration from environment
+proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
+if not proxy_url:
+    print("Error: Set PROXY_URL environment variable", file=sys.stderr)
+    sys.exit(1)
 
-# Make a request with custom proxy headers
-response = requests_adapter.get(
-    'https://api.ipify.org?format=json',
-    proxies=proxies,
-    proxy_headers={'X-ProxyMesh-Country': 'US'}
-)
+test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
+proxy_header = os.environ.get('PROXY_HEADER')
+proxy_value = os.environ.get('PROXY_VALUE')
 
-# Print response
+proxies = {'http': proxy_url, 'https': proxy_url}
+proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
+
+# Make request
+response = requests_adapter.get(test_url, proxies=proxies, proxy_headers=proxy_headers)
+
+# Output
 print(f"Status: {response.status_code}")
 print(f"Body: {response.text}")
-
-# Access proxy response headers (from CONNECT response)
-proxy_ip = response.headers.get('X-ProxyMesh-IP')
-print(f"Proxy IP: {proxy_ip}")
+print(f"X-ProxyMesh-IP: {response.headers.get('X-ProxyMesh-IP')}")

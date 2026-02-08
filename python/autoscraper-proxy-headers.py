@@ -2,43 +2,41 @@
 """
 AutoScraper with proxy headers example.
 
-This example shows how to use AutoScraper with custom proxy headers.
-AutoScraper automatically learns scraping rules while python-proxy-headers
-enables sending custom headers to the proxy server.
+Configuration via environment variables:
+    PROXY_URL    - Proxy URL (required), e.g., http://user:pass@proxy:8080
+    TEST_URL     - URL to request (default: https://api.ipify.org?format=json)
+    PROXY_HEADER - Header name to send to proxy (optional)
+    PROXY_VALUE  - Header value to send to proxy (optional)
 
 See: https://github.com/proxymesh/python-proxy-headers
-Docs: https://python-proxy-headers.readthedocs.io/en/latest/autoscraper.html
 """
+import os
+import sys
 from python_proxy_headers.autoscraper_proxy import ProxyAutoScraper
 
-# Create an AutoScraper with proxy header support
-scraper = ProxyAutoScraper(proxy_headers={'X-ProxyMesh-Country': 'US'})
+# Get configuration from environment
+proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
+if not proxy_url:
+    print("Error: Set PROXY_URL environment variable", file=sys.stderr)
+    sys.exit(1)
 
-# Proxy configuration
-proxies = {
-    'http': 'http://USERNAME:PASSWORD@PROXYHOST:PORT',
-    'https': 'http://USERNAME:PASSWORD@PROXYHOST:PORT'
-}
+test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
+proxy_header = os.environ.get('PROXY_HEADER')
+proxy_value = os.environ.get('PROXY_VALUE')
 
-# Build scraping rules from a sample page
-# AutoScraper learns what to extract based on the wanted_list
-result = scraper.build(
-    url='https://quotes.toscrape.com/',
-    wanted_list=['The world as we have created it is a process of our thinking.'],
-    request_args={'proxies': proxies}
-)
+proxy_headers = {proxy_header: proxy_value} if proxy_header and proxy_value else None
 
-print(f"Found {len(result)} matching quotes")
-for quote in result[:5]:
-    print(f"  - {quote[:60]}...")
+# Create scraper and test via underlying session
+scraper = ProxyAutoScraper(proxy_headers=proxy_headers)
+session = scraper._get_session()
+session.proxies = {'http': proxy_url, 'https': proxy_url}
 
-# Save learned rules for later use
-# scraper.save('quotes_rules.json')
+# Make request
+response = session.get(test_url)
 
-# Use learned rules on another page
-# result = scraper.get_result_similar(
-#     url='https://quotes.toscrape.com/page/2/',
-#     request_args={'proxies': proxies}
-# )
+# Output
+print(f"Status: {response.status_code}")
+print(f"Body: {response.text}")
+print(f"X-ProxyMesh-IP: {response.headers.get('X-ProxyMesh-IP')}")
 
 scraper.close()

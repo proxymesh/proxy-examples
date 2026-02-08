@@ -17,6 +17,31 @@ The [python-proxy-headers](https://github.com/proxymesh/python-proxy-headers) li
 pip install python-proxy-headers
 ```
 
+**Running Examples:**
+
+All examples read proxy configuration from environment variables:
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Optional: Custom test URL (default: https://api.ipify.org?format=json)
+export TEST_URL='https://httpbin.org/ip'
+
+# Optional: Send a custom header to the proxy
+export PROXY_HEADER='X-ProxyMesh-Country'
+export PROXY_VALUE='US'
+
+# Run a single example
+python python/requests-proxy-headers.py
+
+# Run all examples as tests
+python python/run_tests.py
+
+# Run specific examples
+python python/run_tests.py requests-proxy-headers httpx-proxy-headers
+```
+
 **Examples:**
 
 | Library | Example | Description |
