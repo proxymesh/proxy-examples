@@ -32,6 +32,37 @@ pip install python-proxy-headers
 | [cloudscraper](https://github.com/venomous/cloudscraper) | [cloudscraper-proxy-headers.py](python/cloudscraper-proxy-headers.py) | Cloudflare bypass with proxy headers |
 | [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy-headers.py](python/autoscraper-proxy-headers.py) | Automatic web scraping with proxy headers |
 
+### Testing Examples
+
+A test runner is provided to verify all modules work with your proxy configuration:
+
+```bash
+# Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Test all modules
+python python/test_examples.py
+
+# Test specific modules
+python python/test_examples.py requests httpx
+
+# Verbose mode - show proxy header values
+python python/test_examples.py -v
+
+# List available modules
+python python/test_examples.py -l
+```
+
+**Environment Variables:**
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PROXY_URL` | Proxy URL (required) | - |
+| `TEST_URL` | URL to request | `https://httpbin.org/ip` |
+| `PROXY_HEADER` | Response header to check | `X-ProxyMesh-IP` |
+| `SEND_PROXY_HEADER` | Header name to send to proxy | - |
+| `SEND_PROXY_VALUE` | Header value to send to proxy | - |
+
 ### Basic Proxy Examples
 
 * [requests-proxy.py](python/requests-proxy.py) - Basic proxy usage with requests
