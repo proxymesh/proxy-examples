@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# HTTP clients
+gem 'faraday', '~> 2.9'
+gem 'httparty', '~> 0.21'
+gem 'rest-client', '~> 2.1'
+gem 'typhoeus', '~> 1.4'
+gem 'http', '~> 5.2'
+gem 'excon', '~> 0.110'
+gem 'httpclient', '~> 2.8'
+gem 'patron', '~> 0.13'
+gem 'mechanize', '~> 2.10'
+
+# For running tests
+gem 'minitest', '~> 5.22'
