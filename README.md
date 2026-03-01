@@ -71,7 +71,44 @@ python python/run_tests.py requests-proxy-headers httpx-proxy-headers
 
 ## Ruby Proxy Examples
 
-* [requests_proxy.rb](ruby/requests_proxy.rb) - Ruby HTTP with proxy, from [rpolley](https://github.com/rpolley)
+**Installation:**
+
+```bash
+cd ruby
+bundle install
+```
+
+**Running Examples:**
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Run a single example
+ruby ruby/faraday_proxy.rb
+
+# Run all examples as tests
+ruby ruby/run_tests.rb
+
+# Run specific examples
+ruby ruby/run_tests.rb faraday httparty
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [Net::HTTP](https://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html) | [net_http_proxy.rb](ruby/net_http_proxy.rb) | Ruby standard library HTTP client |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday_proxy.rb](ruby/faraday_proxy.rb) | HTTP client with middleware support |
+| [HTTParty](https://github.com/jnunemaker/httparty) | [httparty_proxy.rb](ruby/httparty_proxy.rb) | Makes HTTP fun again |
+| [RestClient](https://github.com/rest-client/rest-client) | [rest_client_proxy.rb](ruby/rest_client_proxy.rb) | Simple REST client |
+| [Typhoeus](https://typhoeus.github.io/) | [typhoeus_proxy.rb](ruby/typhoeus_proxy.rb) | Fast HTTP client (libcurl wrapper) |
+| [HTTP.rb](https://github.com/httprb/http) | [http_rb_proxy.rb](ruby/http_rb_proxy.rb) | Simple Ruby DSL for HTTP |
+| [Excon](https://github.com/excon/excon) | [excon_proxy.rb](ruby/excon_proxy.rb) | Fast, simple HTTP(S) client |
+| [HTTPClient](https://github.com/nahi/httpclient) | [httpclient_proxy.rb](ruby/httpclient_proxy.rb) | LWP-like HTTP client |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize_proxy.rb](ruby/mechanize_proxy.rb) | Web automation library |
+
+> **Note:** None of these libraries currently support sending custom headers to the proxy during HTTPS CONNECT tunneling or reading proxy response headers. See [ruby-proxy-headers](https://github.com/proxymeshai/ruby-proxy-headers) for extension modules that add this capability.
 
 ## Documentation
 
