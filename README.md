@@ -4,6 +4,7 @@ Example code for using proxy servers in different programming languages. Current
 
 * Python
 * Ruby
+* PHP
 
 ## Python Proxy Examples
 
@@ -71,7 +72,76 @@ python python/run_tests.py requests-proxy-headers httpx-proxy-headers
 
 ## Ruby Proxy Examples
 
-* [requests_proxy.rb](ruby/requests_proxy.rb) - Ruby HTTP with proxy, from [rpolley](https://github.com/rpolley)
+**Installation:**
+
+```bash
+cd ruby
+bundle install
+```
+
+**Running Examples:**
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Run a single example
+ruby ruby/faraday_proxy.rb
+
+# Run all examples as tests
+ruby ruby/run_tests.rb
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [Net::HTTP](https://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html) | [net_http_proxy.rb](ruby/net_http_proxy.rb) | Ruby standard library HTTP client |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday_proxy.rb](ruby/faraday_proxy.rb) | HTTP client with middleware support |
+| [HTTParty](https://github.com/jnunemaker/httparty) | [httparty_proxy.rb](ruby/httparty_proxy.rb) | Makes HTTP fun again |
+| [RestClient](https://github.com/rest-client/rest-client) | [rest_client_proxy.rb](ruby/rest_client_proxy.rb) | Simple REST client |
+| [Typhoeus](https://typhoeus.github.io/) | [typhoeus_proxy.rb](ruby/typhoeus_proxy.rb) | Fast HTTP client (libcurl wrapper) |
+| [HTTP.rb](https://github.com/httprb/http) | [http_rb_proxy.rb](ruby/http_rb_proxy.rb) | Simple Ruby DSL for HTTP |
+| [Excon](https://github.com/excon/excon) | [excon_proxy.rb](ruby/excon_proxy.rb) | Fast, simple HTTP(S) client |
+| [HTTPClient](https://github.com/nahi/httpclient) | [httpclient_proxy.rb](ruby/httpclient_proxy.rb) | LWP-like HTTP client |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize_proxy.rb](ruby/mechanize_proxy.rb) | Web automation library |
+
+> **Note:** See [ruby-proxy-headers](https://github.com/proxymeshai/ruby-proxy-headers) for extensions that add custom proxy header support.
+
+## PHP Proxy Examples
+
+**Installation:**
+
+```bash
+cd php
+composer install
+```
+
+**Running Examples:**
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Run a single example
+php php/guzzle_proxy.php
+
+# Run all examples as tests
+php php/run_tests.php
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [cURL](https://www.php.net/manual/en/book.curl.php) | [curl_proxy.php](php/curl_proxy.php) | PHP's built-in HTTP client (libcurl) |
+| [Guzzle](https://docs.guzzlephp.org/) | [guzzle_proxy.php](php/guzzle_proxy.php) | Most popular PHP HTTP client |
+| [Symfony HttpClient](https://symfony.com/doc/current/http_client.html) | [symfony_http_client_proxy.php](php/symfony_http_client_proxy.php) | Modern PSR-18 HTTP client |
+| [Buzz](https://github.com/kriswallsmith/Buzz) | [buzz_proxy.php](php/buzz_proxy.php) | Simple PSR-18 HTTP client |
+| [PHP Streams](https://www.php.net/manual/en/book.stream.php) | [streams_proxy.php](php/streams_proxy.php) | Built-in PHP streams (file_get_contents) |
+| [Amp HTTP](https://amphp.org/http-client) | [amphp_proxy.php](php/amphp_proxy.php) | Async HTTP client |
+
+> **Note:** See [php-proxy-headers](https://github.com/proxymeshai/php-proxy-headers) for extensions that add custom proxy header support.
 
 ## Documentation
 
