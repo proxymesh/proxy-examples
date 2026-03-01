@@ -3,6 +3,7 @@
 Example code for using proxy servers in different programming languages. Currently we have examples for these languages:
 
 * Python
+* JavaScript / Node.js
 * Ruby
 
 ## Python Proxy Examples
@@ -68,6 +69,47 @@ python python/run_tests.py requests-proxy-headers httpx-proxy-headers
 ### Scrapy
 
 * [scrapy-proxy-headers.py](python/scrapy-proxy-headers.py) - Scrapy spider with proxy headers
+
+## JavaScript / Node.js Proxy Examples
+
+**Installation:**
+
+```bash
+cd javascript
+npm install
+```
+
+**Running Examples:**
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Run a single example
+node javascript/axios-proxy.js
+
+# Run all examples as tests
+node javascript/run_tests.js
+
+# Run specific examples
+node javascript/run_tests.js axios got
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [axios](https://axios-http.com/) | [axios-proxy.js](javascript/axios-proxy.js) | Popular promise-based HTTP client |
+| [node-fetch](https://github.com/node-fetch/node-fetch) | [node-fetch-proxy.js](javascript/node-fetch-proxy.js) | Fetch API for Node.js |
+| [got](https://github.com/sindresorhus/got) | [got-proxy.js](javascript/got-proxy.js) | Human-friendly HTTP client |
+| [undici](https://undici.nodejs.org/) | [undici-proxy.js](javascript/undici-proxy.js) | Fast HTTP client (powers Node.js fetch) |
+| [superagent](https://github.com/ladjs/superagent) | [superagent-proxy.js](javascript/superagent-proxy.js) | Flexible HTTP client |
+| [needle](https://github.com/tomas/needle) | [needle-proxy.js](javascript/needle-proxy.js) | Lean HTTP client |
+| [puppeteer](https://pptr.dev/) | [puppeteer-proxy.js](javascript/puppeteer-proxy.js) | Headless Chrome automation |
+| [playwright](https://playwright.dev/) | [playwright-proxy.js](javascript/playwright-proxy.js) | Browser automation |
+| [cheerio](https://cheerio.js.org/) | [cheerio-proxy.js](javascript/cheerio-proxy.js) | HTML parsing with node-fetch |
+
+> **Note:** None of these libraries currently support sending custom headers to the proxy during HTTPS CONNECT tunneling or reading proxy response headers. See [javascript-proxy-headers](https://github.com/proxymesh/javascript-proxy-headers) for extension modules that add this capability.
 
 ## Ruby Proxy Examples
 
