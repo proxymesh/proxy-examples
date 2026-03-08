@@ -22,7 +22,7 @@ if (!proxyUrl) {
     process.exit(1);
 }
 
-const testUrl = process.env.TEST_URL || 'https://example.com';
+const testUrl = process.env.TEST_URL || 'https://api.ipify.org?format=json';
 
 const agent = new HttpsProxyAgent(proxyUrl);
 
