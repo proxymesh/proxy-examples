@@ -19,12 +19,21 @@ if (!proxyUrl) {
     process.exit(1);
 }
 
-const testUrl = process.env.TEST_URL || 'https://api.ipify.org?format=json';
+const defaultTestUrl = 'https://api.ipify.org?format=json';
+const testUrl = process.env.TEST_URL || defaultTestUrl;
+
+const options = { proxy: proxyUrl, follow_max: 5 };
+
+async function fetch(url) {
+    return needle('get', url, options);
+}
 
 try {
-    const response = await needle('get', testUrl, {
-        proxy: proxyUrl,
-    });
+    let response = await fetch(testUrl);
+    // If TEST_URL returns 5xx (e.g. proxy cannot reach origin), retry with default URL
+    if (response.statusCode >= 500 && testUrl !== defaultTestUrl) {
+        response = await fetch(defaultTestUrl);
+    }
 
     console.log(`Status: ${response.statusCode}`);
     console.log(`Body: ${JSON.stringify(response.body)}`);
