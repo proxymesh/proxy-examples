@@ -6,12 +6,12 @@
  *     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
  *     TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
  *
- * Needle has built-in proxy support via the 'proxy' option.
- *
- * Note: Needle does not support sending custom headers to the proxy during
- * HTTPS CONNECT tunneling, nor does it expose proxy response headers.
+ * Uses HttpsProxyAgent for CONNECT tunneling so HTTPS works reliably through
+ * the proxy (Needle's built-in proxy option can fail with 503 on some proxies).
+ * See: https://www.npmjs.com/package/needle#more-advanced-proxy-support
  */
 import needle from 'needle';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 const proxyUrl = process.env.PROXY_URL || process.env.HTTPS_PROXY;
 if (!proxyUrl) {
@@ -19,21 +19,14 @@ if (!proxyUrl) {
     process.exit(1);
 }
 
-const defaultTestUrl = 'https://api.ipify.org?format=json';
-const testUrl = process.env.TEST_URL || defaultTestUrl;
+const testUrl = process.env.TEST_URL || 'https://api.ipify.org?format=json';
 
-const options = { proxy: proxyUrl, follow_max: 5 };
-
-async function fetch(url) {
-    return needle('get', url, options);
-}
+const agent = new HttpsProxyAgent(proxyUrl);
 
 try {
-    let response = await fetch(testUrl);
-    // If TEST_URL returns 5xx (e.g. proxy cannot reach origin), retry with default URL
-    if (response.statusCode >= 500 && testUrl !== defaultTestUrl) {
-        response = await fetch(defaultTestUrl);
-    }
+    const response = await needle('get', testUrl, {
+        agent,
+    });
 
     console.log(`Status: ${response.statusCode}`);
     console.log(`Body: ${JSON.stringify(response.body)}`);
