@@ -35,6 +35,7 @@ try {
 
     console.log(`Status: ${response.status}`);
     console.log(`Title: ${title}`);
+    console.log(`Body: ${html}`);
 } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);

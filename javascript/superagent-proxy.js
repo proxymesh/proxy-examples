@@ -28,7 +28,8 @@ try {
         .agent(agent);
 
     console.log(`Status: ${response.status}`);
-    console.log(`Body: ${JSON.stringify(response.body)}`);
+    // Use .text for full raw body; .body is parsed (e.g. JSON) and may be empty for HTML
+    console.log(`Body: ${response.text ?? JSON.stringify(response.body)}`);
 } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
