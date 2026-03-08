@@ -28,6 +28,11 @@ try {
 
     console.log(`Status: ${response.statusCode}`);
     console.log(`Body: ${JSON.stringify(response.body)}`);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+        console.error(`Request failed with status ${response.statusCode}`);
+        process.exit(1);
+    }
 } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
