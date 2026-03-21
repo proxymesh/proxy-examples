@@ -79,33 +79,23 @@ cd javascript
 npm install
 ```
 
-The `javascript-proxy-headers` dependency is currently resolved from GitHub (`feature/tier-a-proxy-extensions`) so the examples can use the v0.2.0 subpath exports before they appear on npm. After `javascript-proxy-headers@0.2.0` is published, `package.json` can be switched to `"javascript-proxy-headers": "^0.2.0"`.
-
 **Running Examples:**
 
 ```bash
-cd javascript
-npm install
-
 # Required: Set your proxy URL
 export PROXY_URL='http://user:pass@proxy.example.com:8080'
 
-# Optional: custom CONNECT headers and a proxy response header to print (ProxyMesh-style)
-export PROXY_HEADER='X-ProxyMesh-Country'
-export PROXY_VALUE='US'
-export RESPONSE_HEADER='X-ProxyMesh-IP'
-
 # Run a single example
-node axios-proxy.js
+node javascript/axios-proxy.js
 
 # Run all examples as tests
-node run_tests.js
+node javascript/run_tests.js
 
-# Run specific examples (substring match on filename)
-node run_tests.js axios ky-proxy-headers
+# Run specific examples
+node javascript/run_tests.js axios got
 ```
 
-**Examples (basic proxy tunnel):**
+**Examples:**
 
 | Library | Example | Description |
 |---------|---------|-------------|
@@ -114,22 +104,12 @@ node run_tests.js axios ky-proxy-headers
 | [got](https://github.com/sindresorhus/got) | [got-proxy.js](javascript/got-proxy.js) | Human-friendly HTTP client |
 | [undici](https://undici.nodejs.org/) | [undici-proxy.js](javascript/undici-proxy.js) | Fast HTTP client (powers Node.js fetch) |
 | [superagent](https://github.com/ladjs/superagent) | [superagent-proxy.js](javascript/superagent-proxy.js) | Flexible HTTP client |
-| [needle](https://github.com/tomas/needle) | [needle-proxy.js](javascript/needle-proxy.js) | Lean HTTP client (`https-proxy-agent`) |
+| [needle](https://github.com/tomas/needle) | [needle-proxy.js](javascript/needle-proxy.js) | Lean HTTP client |
 | [puppeteer](https://pptr.dev/) | [puppeteer-proxy.js](javascript/puppeteer-proxy.js) | Headless Chrome automation |
 | [playwright](https://playwright.dev/) | [playwright-proxy.js](javascript/playwright-proxy.js) | Browser automation |
 | [cheerio](https://cheerio.js.org/) | [cheerio-proxy.js](javascript/cheerio-proxy.js) | HTML parsing with node-fetch |
 
-> **Note:** The examples above use a standard HTTPS proxy agent. They do not send custom headers on the CONNECT request or surface the proxy’s CONNECT response headers. For that, use **[javascript-proxy-headers](https://github.com/proxymesh/javascript-proxy-headers)** and the `*-proxy-headers.js` examples below.
-
-**Examples ([javascript-proxy-headers](https://github.com/proxymesh/javascript-proxy-headers)) — custom CONNECT headers:**
-
-| Library | Example | Description |
-|---------|---------|-------------|
-| [ky](https://github.com/sindresorhus/ky) | [ky-proxy-headers.js](javascript/ky-proxy-headers.js) | Fetch wrapper with custom `fetch` |
-| [wretch](https://github.com/elbywan/wretch) | [wretch-proxy-headers.js](javascript/wretch-proxy-headers.js) | Fetch wrapper + polyfill |
-| [make-fetch-happen](https://github.com/npm/make-fetch-happen) | [make-fetch-happen-proxy-headers.js](javascript/make-fetch-happen-proxy-headers.js) | npm-style fetch with `agent` |
-| [needle](https://github.com/tomas/needle) | [needle-proxy-headers.js](javascript/needle-proxy-headers.js) | Same client as `needle-proxy.js`, with CONNECT headers |
-| [typed-rest-client](https://github.com/microsoft/typed-rest-client) | [typed-rest-client-proxy-headers.js](javascript/typed-rest-client-proxy-headers.js) | Azure/DevOps-style REST client |
+> **Note:** None of these libraries currently support sending custom headers to the proxy during HTTPS CONNECT tunneling or reading proxy response headers. See [javascript-proxy-headers](https://github.com/proxymesh/javascript-proxy-headers) for extension modules that add this capability.
 
 ## Ruby Proxy Examples
 
