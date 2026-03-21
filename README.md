@@ -108,6 +108,10 @@ node javascript/run_tests.js axios got
 | [puppeteer](https://pptr.dev/) | [puppeteer-proxy.js](javascript/puppeteer-proxy.js) | Headless Chrome automation |
 | [playwright](https://playwright.dev/) | [playwright-proxy.js](javascript/playwright-proxy.js) | Browser automation |
 | [cheerio](https://cheerio.js.org/) | [cheerio-proxy.js](javascript/cheerio-proxy.js) | HTML parsing with node-fetch |
+| [ky](https://github.com/sindresorhus/ky) | [ky-proxy.js](javascript/ky-proxy.js) | Fetch wrapper (node-fetch + agent) |
+| [wretch](https://github.com/elbywan/wretch) | [wretch-proxy.js](javascript/wretch-proxy.js) | Fetch wrapper (polyfill) |
+| [make-fetch-happen](https://github.com/npm/make-fetch-happen) | [make-fetch-happen-proxy.js](javascript/make-fetch-happen-proxy.js) | npm-style fetch |
+| [typed-rest-client](https://github.com/microsoft/typed-rest-client) | [typed-rest-client-proxy.js](javascript/typed-rest-client-proxy.js) | REST client (built-in proxy option) |
 
 > **Note:** None of these libraries currently support sending custom headers to the proxy during HTTPS CONNECT tunneling or reading proxy response headers. See [javascript-proxy-headers](https://github.com/proxymesh/javascript-proxy-headers) for extension modules that add this capability.
 

@@ -29,6 +29,10 @@ const EXAMPLES = [
     'superagent-proxy.js',
     'needle-proxy.js',
     'cheerio-proxy.js',
+    'ky-proxy.js',
+    'wretch-proxy.js',
+    'make-fetch-happen-proxy.js',
+    'typed-rest-client-proxy.js',
 ];
 
 const BROWSER_EXAMPLES = [

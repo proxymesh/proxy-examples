@@ -15,6 +15,8 @@
     "cheerio": "^1.0.0",
     "got": "^14.4.0",
     "https-proxy-agent": "^7.0.0",
+    "ky": "^1.7.0",
+    "make-fetch-happen": "^14.0.3",
     "needle": "^3.3.0",
     "node-fetch": "^3.3.0",
     "nvm": "^0.0.4",
@@ -22,7 +24,9 @@
     "puppeteer": "^24.0.0",
     "socks-proxy-agent": "^8.0.0",
     "superagent": "^10.1.0",
-    "undici": "^7.2.0"
+    "typed-rest-client": "^2.2.0",
+    "undici": "^7.2.0",
+    "wretch": "^2.11.0"
   },
   "keywords": [
     "proxy",
