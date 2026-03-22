@@ -4,9 +4,10 @@ source 'https://rubygems.org'
 
 ruby '>= 3.1'
 
+# Pin multi_xml to 0.6.x so Bundler does not pull bigdecimal 4.x (needs ruby-dev to compile).
+gem 'multi_xml', '~> 0.6.0'
+gem 'httparty', '~> 0.21.0'
+
 gem 'excon', '~> 1.4'
-gem 'faraday', '~> 2.14'
-gem 'httparty', '~> 0.24'
-gem 'mechanize', '~> 2.14'
-gem 'nokogiri', '~> 1.19'
+gem 'httpclient', '~> 2.9'
 gem 'typhoeus', '~> 1.6'

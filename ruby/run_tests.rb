@@ -10,7 +10,7 @@
 #
 # Usage:
 #     bundle exec ruby run_tests.rb              # Run all examples
-#     bundle exec ruby run_tests.rb faraday      # Run specific example
+#     bundle exec ruby run_tests.rb httpclient   # Run specific example
 #     bundle exec ruby run_tests.rb -l           # List available examples
 #
 # Install dependencies first: bundle install
@@ -21,12 +21,11 @@ SCRIPT_DIR = File.expand_path(__dir__)
 
 EXAMPLES = %w[
   net-http-proxy.rb
-  faraday-proxy.rb
+  httpclient-proxy.rb
+  httpclient-scrape-proxy.rb
   httparty-proxy.rb
   typhoeus-proxy.rb
   excon-proxy.rb
-  mechanize-proxy.rb
-  nokogiri-proxy.rb
 ].freeze
 
 def parse_args(argv)
