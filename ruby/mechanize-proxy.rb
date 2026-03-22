@@ -1,18 +1,20 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# HTTPClient with an HTTP proxy.
+# Mechanize (browser-like crawling) with an HTTP proxy.
 #
 # Configuration via environment variables:
 #     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
 #     TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
 #     RESPONSE_HEADER - Optional header name to print from the response
 #
-# Set the proxy on the client with HTTPClient#proxy= (full URL with optional userinfo).
+# Use Mechanize#set_proxy(address, port, user = nil, password = nil) with host/port
+# and credentials parsed from the proxy URL.
 #
-# Documentation: https://www.rubydoc.info/gems/httpclient/HTTPClient
+# Documentation: https://www.rubydoc.info/gems/mechanize/Mechanize#set_proxy-instance_method
 require 'bundler/setup'
-require 'httpclient'
+require 'mechanize'
+require 'uri'
 
 proxy_url = ENV['PROXY_URL'] || ENV['HTTPS_PROXY']
 unless proxy_url
@@ -23,17 +25,15 @@ end
 test_url = ENV['TEST_URL'] || 'https://api.ipify.org?format=json'
 response_header = ENV['RESPONSE_HEADER']
 
-client = HTTPClient.new
-client.proxy = proxy_url
+proxy = URI.parse(proxy_url)
 
-response = client.get(test_url)
-body = response.body.respond_to?(:content) ? response.body.content : response.body.to_s
+agent = Mechanize.new
+agent.set_proxy(proxy.host, proxy.port, proxy.user, proxy.password)
 
-status = response.status
-status_code = status.respond_to?(:code) ? status.code : status
-puts "Status: #{status_code}"
-puts "Body: #{body}"
+page = agent.get(test_url)
+
+puts "Status: #{page.code}"
+puts "Body: #{page.body}"
 if response_header && !response_header.empty?
-  h = response.headers[response_header] || response.headers[response_header.downcase]
-  puts "#{response_header}: #{h}"
+  puts "#{response_header}: #{page.response[response_header]}"
 end

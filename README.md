@@ -119,7 +119,7 @@ node javascript/run_tests.js axios got
 
 **Installation:**
 
-These examples use [Bundler](https://bundler.io/). Dependencies are pure Ruby or ship precompiled native gems (for example `ffi`); [Typhoeus](https://github.com/typhoeus/typhoeus) uses Ethon and needs the libcurl shared library at runtime. A normal `bundle install` should not require `ruby-dev` on common Linux x86_64 setups.
+These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
 
 ```bash
 cd ruby
@@ -139,13 +139,13 @@ export TEST_URL='https://httpbin.org/ip'
 export RESPONSE_HEADER='X-ProxyMesh-IP'
 
 # Single example (from ruby/)
-bundle exec ruby httpclient-proxy.rb
+bundle exec ruby faraday-proxy.rb
 
 # All examples as tests
 bundle exec ruby run_tests.rb
 
 # Specific examples
-bundle exec ruby run_tests.rb httpclient typhoeus
+bundle exec ruby run_tests.rb faraday typhoeus
 ```
 
 **Examples:**
@@ -153,13 +153,14 @@ bundle exec ruby run_tests.rb httpclient typhoeus
 | Library | Example | Description |
 |---------|---------|-------------|
 | [Net::HTTP](https://docs.ruby-lang.org/en/master/Net/HTTP.html) (stdlib) | [net-http-proxy.rb](ruby/net-http-proxy.rb) | Low-level HTTP with proxy (`Net::HTTP.new` + proxy host/port/user/pass) |
-| [HTTPClient](https://github.com/nahi/httpclient) | [httpclient-proxy.rb](ruby/httpclient-proxy.rb) | Full-featured client; `HTTPClient#proxy=` then `get` |
-| HTTPClient + stdlib JSON | [httpclient-scrape-proxy.rb](ruby/httpclient-scrape-proxy.rb) | Proxied fetch then parse JSON (scraping-style pipeline; use an HTML parser such as Nokogiri for markup) |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday-proxy.rb](ruby/faraday-proxy.rb) | Middleware-style client; `Faraday.new(proxy: url)` |
 | [HTTParty](https://github.com/jnunemaker/httparty) | [httparty-proxy.rb](ruby/httparty-proxy.rb) | Simple API; `http_proxyaddr` / `http_proxyport` / credentials |
 | [Typhoeus](https://github.com/typhoeus/typhoeus) | [typhoeus-proxy.rb](ruby/typhoeus-proxy.rb) | libcurl via Ethon; `proxy:` URL on the request |
 | [Excon](https://github.com/excon/excon) | [excon-proxy.rb](ruby/excon-proxy.rb) | Fast client; `Excon.get(url, proxy: url)` |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize-proxy.rb](ruby/mechanize-proxy.rb) | Crawling / forms; `set_proxy(host, port, user, password)` |
+| [Nokogiri](https://nokogiri.org/) | [nokogiri-proxy.rb](ruby/nokogiri-proxy.rb) | Parse HTML after a proxied `Net::HTTP` fetch |
 
-Libraries above are actively maintained on RubyGems (check RubyGems for current release dates). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
+Libraries above are actively maintained on RubyGems (releases within the last year as of early 2026). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
 
 ## Documentation
 
