@@ -130,3 +130,7 @@ dmypy.json
 
 # Node.js (JavaScript examples)
 javascript/node_modules/
+
+# Ruby (Bundler)
+ruby/vendor/bundle/
+ruby/.bundle/

@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '>= 3.1'
+
+gem 'excon', '~> 1.4'
+gem 'faraday', '~> 2.14'
+gem 'httparty', '~> 0.24'
+gem 'mechanize', '~> 2.14'
+gem 'nokogiri', '~> 1.19'
+gem 'typhoeus', '~> 1.6'

@@ -117,7 +117,50 @@ node javascript/run_tests.js axios got
 
 ## Ruby Proxy Examples
 
-* [requests_proxy.rb](ruby/requests_proxy.rb) - Ruby HTTP with proxy, from [rpolley](https://github.com/rpolley)
+**Installation:**
+
+These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
+
+```bash
+cd ruby
+bundle install
+```
+
+**Running examples:**
+
+```bash
+# Required: set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Optional: target URL (default: https://api.ipify.org?format=json)
+export TEST_URL='https://httpbin.org/ip'
+
+# Optional: print one response header
+export RESPONSE_HEADER='X-ProxyMesh-IP'
+
+# Single example (from ruby/)
+bundle exec ruby faraday-proxy.rb
+
+# All examples as tests
+bundle exec ruby run_tests.rb
+
+# Specific examples
+bundle exec ruby run_tests.rb faraday typhoeus
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [Net::HTTP](https://docs.ruby-lang.org/en/master/Net/HTTP.html) (stdlib) | [net-http-proxy.rb](ruby/net-http-proxy.rb) | Low-level HTTP with proxy (`Net::HTTP.new` + proxy host/port/user/pass) |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday-proxy.rb](ruby/faraday-proxy.rb) | Middleware-style client; `Faraday.new(proxy: url)` |
+| [HTTParty](https://github.com/jnunemaker/httparty) | [httparty-proxy.rb](ruby/httparty-proxy.rb) | Simple API; `http_proxyaddr` / `http_proxyport` / credentials |
+| [Typhoeus](https://github.com/typhoeus/typhoeus) | [typhoeus-proxy.rb](ruby/typhoeus-proxy.rb) | libcurl via Ethon; `proxy:` URL on the request |
+| [Excon](https://github.com/excon/excon) | [excon-proxy.rb](ruby/excon-proxy.rb) | Fast client; `Excon.get(url, proxy: url)` |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize-proxy.rb](ruby/mechanize-proxy.rb) | Crawling / forms; `set_proxy(host, port, user, password)` |
+| [Nokogiri](https://nokogiri.org/) | [nokogiri-proxy.rb](ruby/nokogiri-proxy.rb) | Parse HTML after a proxied `Net::HTTP` fetch |
+
+Libraries above are actively maintained on RubyGems (releases within the last year as of early 2026). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
 
 ## Documentation
 
