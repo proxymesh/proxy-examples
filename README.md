@@ -117,16 +117,80 @@ node javascript/run_tests.js axios got
 
 ## Ruby Proxy Examples
 
-* [requests_proxy.rb](ruby/requests_proxy.rb) - Ruby HTTP with proxy, from [rpolley](https://github.com/rpolley)
+**Installation:**
 
-## Documentation
+These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
 
-For more information on using proxy headers with Python:
+```bash
+cd ruby
+bundle install
+```
+
+**Running examples:**
+
+```bash
+# Required: set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Optional: target URL (default: https://api.ipify.org?format=json)
+export TEST_URL='https://httpbin.org/ip'
+
+# Optional: print one response header
+export RESPONSE_HEADER='X-ProxyMesh-IP'
+
+# Single example (from ruby/)
+bundle exec ruby faraday-proxy.rb
+
+# All examples as tests
+bundle exec ruby run_tests.rb
+
+# Specific examples
+bundle exec ruby run_tests.rb faraday typhoeus
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [Net::HTTP](https://docs.ruby-lang.org/en/master/Net/HTTP.html) (stdlib) | [net-http-proxy.rb](ruby/net-http-proxy.rb) | Low-level HTTP with proxy (`Net::HTTP.new` + proxy host/port/user/pass) |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday-proxy.rb](ruby/faraday-proxy.rb) | Middleware-style client; `Faraday.new(proxy: url)` |
+| [HTTParty](https://github.com/jnunemaker/httparty) | [httparty-proxy.rb](ruby/httparty-proxy.rb) | Simple API; `http_proxyaddr` / `http_proxyport` / credentials |
+| [HTTP.rb](https://github.com/httprb/http) | [http-rb-proxy.rb](ruby/http-rb-proxy.rb) | Lightweight DSL; proxy via `HTTP.via(host, port, user, pass)` |
+| [RestClient](https://github.com/rest-client/rest-client) | [rest-client-proxy.rb](ruby/rest-client-proxy.rb) | Simple REST API; proxy via `RestClient.proxy = url` |
+| [Typhoeus](https://github.com/typhoeus/typhoeus) | [typhoeus-proxy.rb](ruby/typhoeus-proxy.rb) | libcurl via Ethon; `proxy:` URL on the request |
+| [Excon](https://github.com/excon/excon) | [excon-proxy.rb](ruby/excon-proxy.rb) | Fast client; `Excon.get(url, proxy: url)` |
+| [HTTPClient](https://github.com/nahi/httpclient) | [httpclient-proxy.rb](ruby/httpclient-proxy.rb) | LWP-like client; pass full proxy URL to `HTTPClient.new` |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize-proxy.rb](ruby/mechanize-proxy.rb) | Crawling / forms; `set_proxy(host, port, user, password)` |
+| [Nokogiri](https://nokogiri.org/) | [nokogiri-proxy.rb](ruby/nokogiri-proxy.rb) | Parse HTML after a proxied `Net::HTTP` fetch |
+
+Libraries above are actively maintained on RubyGems (releases within the last year as of early 2026). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
+
+## Related Documentation
+
+More examples and language-specific proxy-header tooling:
+
+### Python
 
 * [python-proxy-headers on PyPI](https://pypi.org/project/python-proxy-headers/)
 * [python-proxy-headers Documentation](https://python-proxy-headers.readthedocs.io/)
-* [GitHub Repository](https://github.com/proxymesh/python-proxy-headers)
+* [python-proxy-headers GitHub](https://github.com/proxymesh/python-proxy-headers)
+
+### JavaScript / Node.js
+
+* [javascript-proxy-headers GitHub](https://github.com/proxymesh/javascript-proxy-headers)
+* [javascript-proxy-headers on npm](https://www.npmjs.com/package/javascript-proxy-headers)
+* [javascript-proxy-headers on JSR](https://jsr.io/@proxymesh/javascript-proxy-headers)
+
+### Ruby
+
+* Ruby examples in this repository: [ruby/](ruby/)
 
 ## Contributing
 
-If you have example code for another language, please share it with a Pull Request.
+Contributions are welcome for all supported languages in this repository (Python, JavaScript, and Ruby), as well as new language examples.
+
+When opening a Pull Request:
+
+* Follow the existing file naming and environment variable patterns (`PROXY_URL`, `TEST_URL`, and optional response/proxy header variables).
+* Include runnable examples and update the language section in this README.
+* Add or update the language test runner (`run_tests`) where applicable.
