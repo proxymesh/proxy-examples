@@ -165,14 +165,30 @@ bundle exec ruby run_tests.rb faraday typhoeus
 
 Libraries above are actively maintained on RubyGems (releases within the last year as of early 2026). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
 
-## Documentation
+## Related Documentation
 
-For more information on using proxy headers with Python:
+More examples and language-specific proxy-header tooling:
+
+### Python
 
 * [python-proxy-headers on PyPI](https://pypi.org/project/python-proxy-headers/)
 * [python-proxy-headers Documentation](https://python-proxy-headers.readthedocs.io/)
-* [GitHub Repository](https://github.com/proxymesh/python-proxy-headers)
+* [python-proxy-headers GitHub](https://github.com/proxymesh/python-proxy-headers)
+
+### JavaScript / Node.js
+
+* [javascript-proxy-headers GitHub](https://github.com/proxymesh/javascript-proxy-headers)
+
+### Ruby
+
+* [ruby-proxy-headers GitHub](https://github.com/proxymesh/ruby-proxy-headers)
 
 ## Contributing
 
-If you have example code for another language, please share it with a Pull Request.
+Contributions are welcome for all supported languages in this repository (Python, JavaScript, and Ruby), as well as new language examples.
+
+When opening a Pull Request:
+
+* Follow the existing file naming and environment variable patterns (`PROXY_URL`, `TEST_URL`, and optional response/proxy header variables).
+* Include runnable examples and update the language section in this README.
+* Add or update the language test runner (`run_tests`) where applicable.
