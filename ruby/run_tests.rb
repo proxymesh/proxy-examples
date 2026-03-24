@@ -23,8 +23,11 @@ EXAMPLES = %w[
   net-http-proxy.rb
   faraday-proxy.rb
   httparty-proxy.rb
+  http-rb-proxy.rb
+  rest-client-proxy.rb
   typhoeus-proxy.rb
   excon-proxy.rb
+  httpclient-proxy.rb
   mechanize-proxy.rb
   nokogiri-proxy.rb
 ].freeze
