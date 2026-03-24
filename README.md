@@ -178,10 +178,12 @@ More examples and language-specific proxy-header tooling:
 ### JavaScript / Node.js
 
 * [javascript-proxy-headers GitHub](https://github.com/proxymesh/javascript-proxy-headers)
+* [javascript-proxy-headers on npm](https://www.npmjs.com/package/javascript-proxy-headers)
+* [javascript-proxy-headers on JSR](https://jsr.io/@proxymesh/javascript-proxy-headers)
 
 ### Ruby
 
-* [ruby-proxy-headers GitHub](https://github.com/proxymesh/ruby-proxy-headers)
+* Ruby examples in this repository: [ruby/](ruby/)
 
 ## Contributing
 
