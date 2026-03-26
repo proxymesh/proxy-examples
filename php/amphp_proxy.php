@@ -16,8 +16,9 @@ require_once __DIR__ . '/common.php';
 
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Http\Client\Request;
+use Amp\Http\Client\Connection\DefaultConnectionFactory;
+use Amp\Http\Client\Connection\UnlimitedConnectionPool;
 use Amp\Http\Tunnel\Http1TunnelConnector;
-use Amp\Socket\SocketAddress;
 
 $proxyUrl = get_proxy_url();
 
@@ -28,12 +29,16 @@ $proxyHost = $parsedProxy['host'];
 $proxyPort = $parsedProxy['port'] ?? 8080;
 
 try {
-    $connector = new Http1TunnelConnector(
-        new SocketAddress($proxyHost, $proxyPort)
-    );
+    $tunnelHeaders = [];
+    if (isset($parsedProxy['user'])) {
+        $credentials = $parsedProxy['user'] . ':' . ($parsedProxy['pass'] ?? '');
+        $tunnelHeaders['Proxy-Authorization'] = 'Basic ' . base64_encode($credentials);
+    }
+    $connector = new Http1TunnelConnector("{$proxyHost}:{$proxyPort}", $tunnelHeaders);
+    $pool = new UnlimitedConnectionPool(new DefaultConnectionFactory($connector));
 
     $client = (new HttpClientBuilder())
-        ->usingPool($connector)
+        ->usingPool($pool)
         ->build();
 
     $request = new Request($testUrl);

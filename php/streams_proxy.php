@@ -25,7 +25,8 @@ $proxyPort = $parsedProxy['port'] ?? 8080;
 $contextOptions = [
     'http' => [
         'proxy' => "tcp://{$proxyHost}:{$proxyPort}",
-        'request_fulluri' => true,
+        // Keep origin-form request targets for HTTPS tunneled traffic.
+        'request_fulluri' => false,
         'timeout' => 30,
     ],
     'ssl' => [
