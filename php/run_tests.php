@@ -25,6 +25,8 @@ define('EXAMPLES', [
     'amphp_proxy.php' => 'Amp HTTP',
 ]);
 
+require_once __DIR__ . '/common.php';
+
 function parseArgs(array $argv): array {
     $options = [
         'verbose' => false,
@@ -104,7 +106,8 @@ function runExample(string $file, bool $verbose): array {
 
     $output = [];
     $returnCode = 0;
-    exec("php {$scriptPath} 2>&1", $output, $returnCode);
+    $command = 'php ' . escapeshellarg($scriptPath) . ' 2>&1';
+    exec($command, $output, $returnCode);
     $outputStr = implode("\n", $output);
 
     if ($verbose) {
@@ -135,6 +138,13 @@ function main(array $argv): int {
         fwrite(STDERR, "Error: Set PROXY_URL environment variable\n");
         fwrite(STDERR, "\nExample:\n");
         fwrite(STDERR, "  export PROXY_URL='http://user:pass@proxy:8080'\n");
+        fwrite(STDERR, "  export PROXY_URL='us-ca.proxymesh.com'\n");
+        return 1;
+    }
+
+    $proxyUrl = normalize_proxy_url($proxyUrl);
+    if ($proxyUrl === '') {
+        fwrite(STDERR, "Error: Invalid PROXY_URL value\n");
         return 1;
     }
 
@@ -148,6 +158,10 @@ function main(array $argv): int {
             }
             return false;
         }, ARRAY_FILTER_USE_KEY);
+    }
+    if (empty($examplesToRun)) {
+        fwrite(STDERR, "No matching examples.\n");
+        return 1;
     }
 
     $testUrl = getenv('TEST_URL') ?: 'https://api.ipify.org?format=json';

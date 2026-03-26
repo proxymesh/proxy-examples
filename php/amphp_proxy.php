@@ -12,17 +12,14 @@
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/common.php';
 
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Http\Client\Request;
 use Amp\Http\Tunnel\Http1TunnelConnector;
 use Amp\Socket\SocketAddress;
 
-$proxyUrl = getenv('PROXY_URL') ?: getenv('HTTPS_PROXY');
-if (!$proxyUrl) {
-    fwrite(STDERR, "Error: Set PROXY_URL environment variable\n");
-    exit(1);
-}
+$proxyUrl = get_proxy_url();
 
 $testUrl = getenv('TEST_URL') ?: 'https://api.ipify.org?format=json';
 

@@ -12,11 +12,9 @@
  * This is PHP's built-in HTTP capability without extensions.
  */
 
-$proxyUrl = getenv('PROXY_URL') ?: getenv('HTTPS_PROXY');
-if (!$proxyUrl) {
-    fwrite(STDERR, "Error: Set PROXY_URL environment variable\n");
-    exit(1);
-}
+require_once __DIR__ . '/common.php';
+
+$proxyUrl = get_proxy_url();
 
 $testUrl = getenv('TEST_URL') ?: 'https://api.ipify.org?format=json';
 
