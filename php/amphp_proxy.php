@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Amp HTTP Client with proxy example.
+ *
+ * Configuration via environment variables:
+ *   PROXY_URL  - Proxy URL (required), e.g., http://user:pass@proxy:8080
+ *   TEST_URL   - URL to request (default: https://api.ipify.org?format=json)
+ *
+ * Amp HTTP Client is an async HTTP client for PHP. It supports proxies
+ * but does NOT support custom CONNECT headers or reading proxy response headers.
+ */
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/common.php';
+
+use Amp\Http\Client\HttpClientBuilder;
+use Amp\Http\Client\Request;
+use Amp\Http\Client\Connection\DefaultConnectionFactory;
+use Amp\Http\Client\Connection\UnlimitedConnectionPool;
+use Amp\Http\Tunnel\Http1TunnelConnector;
+
+$proxyUrl = get_proxy_url();
+
+$testUrl = getenv('TEST_URL') ?: 'https://api.ipify.org?format=json';
+
+$parsedProxy = parse_url($proxyUrl);
+$proxyHost = $parsedProxy['host'];
+$proxyPort = $parsedProxy['port'] ?? 8080;
+
+try {
+    $tunnelHeaders = [];
+    if (isset($parsedProxy['user'])) {
+        $credentials = $parsedProxy['user'] . ':' . ($parsedProxy['pass'] ?? '');
+        $tunnelHeaders['Proxy-Authorization'] = 'Basic ' . base64_encode($credentials);
+    }
+    $connector = new Http1TunnelConnector("{$proxyHost}:{$proxyPort}", $tunnelHeaders);
+    $pool = new UnlimitedConnectionPool(new DefaultConnectionFactory($connector));
+
+    $client = (new HttpClientBuilder())
+        ->usingPool($pool)
+        ->build();
+
+    $request = new Request($testUrl);
+    $response = $client->request($request);
+
+    echo "Status: " . $response->getStatus() . "\n";
+    echo "Body: " . $response->getBody()->buffer() . "\n";
+} catch (Exception $e) {
+    fwrite(STDERR, "Error: " . $e->getMessage() . "\n");
+    exit(1);
+}

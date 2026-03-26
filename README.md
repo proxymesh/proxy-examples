@@ -5,6 +5,7 @@ Example code for using proxy servers in different programming languages. Current
 * Python
 * JavaScript / Node.js
 * Ruby
+* PHP
 
 ## Python Proxy Examples
 
@@ -119,7 +120,86 @@ node javascript/run_tests.js axios got
 
 ## Ruby Proxy Examples
 
+These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
+
+```bash
+cd ruby
+bundle install
+```
+
+**Running examples:**
+
+```bash
+# Required: set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Optional: target URL (default: https://api.ipify.org?format=json)
+export TEST_URL='https://httpbin.org/ip'
+
+# Optional: print one response header
+export RESPONSE_HEADER='X-ProxyMesh-IP'
+
+# Single example (from ruby/)
+bundle exec ruby faraday-proxy.rb
+
+# All examples as tests
+bundle exec ruby run_tests.rb
+
+# Specific examples
+bundle exec ruby run_tests.rb faraday typhoeus
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [Net::HTTP](https://docs.ruby-lang.org/en/master/Net/HTTP.html) (stdlib) | [net-http-proxy.rb](ruby/net-http-proxy.rb) | Low-level HTTP with proxy (`Net::HTTP.new` + proxy host/port/user/pass) |
+| [Faraday](https://lostisland.github.io/faraday/) | [faraday-proxy.rb](ruby/faraday-proxy.rb) | Middleware-style client; `Faraday.new(proxy: url)` |
+| [HTTParty](https://github.com/jnunemaker/httparty) | [httparty-proxy.rb](ruby/httparty-proxy.rb) | Simple API; `http_proxyaddr` / `http_proxyport` / credentials |
+| [HTTP.rb](https://github.com/httprb/http) | [http-rb-proxy.rb](ruby/http-rb-proxy.rb) | Lightweight DSL; proxy via `HTTP.via(host, port, user, pass)` |
+| [RestClient](https://github.com/rest-client/rest-client) | [rest-client-proxy.rb](ruby/rest-client-proxy.rb) | Simple REST API; proxy via `RestClient.proxy = url` |
+| [Typhoeus](https://github.com/typhoeus/typhoeus) | [typhoeus-proxy.rb](ruby/typhoeus-proxy.rb) | libcurl via Ethon; `proxy:` URL on the request |
+| [Excon](https://github.com/excon/excon) | [excon-proxy.rb](ruby/excon-proxy.rb) | Fast client; `Excon.get(url, proxy: url)` |
+| [HTTPClient](https://github.com/nahi/httpclient) | [httpclient-proxy.rb](ruby/httpclient-proxy.rb) | LWP-like client; pass full proxy URL to `HTTPClient.new` |
+| [Mechanize](https://github.com/sparklemotion/mechanize) | [mechanize-proxy.rb](ruby/mechanize-proxy.rb) | Crawling / forms; `set_proxy(host, port, user, password)` |
+| [Nokogiri](https://nokogiri.org/) | [nokogiri-proxy.rb](ruby/nokogiri-proxy.rb) | Parse HTML after a proxied `Net::HTTP` fetch |
+
+Libraries above are actively maintained on RubyGems (releases within the last year as of early 2026). Like most high-level Ruby HTTP clients, they do not expose custom headers on the HTTPS `CONNECT` tunnel to the proxy or proxy response headers; for ProxyMesh-style custom proxy headers, lower-level clients or a dedicated helper library may be required.
+
+## PHP Proxy Examples
+
 **Installation:**
+
+```bash
+cd php
+composer install
+```
+
+**Running Examples:**
+
+```bash
+# Required: Set your proxy URL
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+
+# Run a single example
+php php/guzzle_proxy.php
+
+# Run all examples as tests
+php php/run_tests.php
+```
+
+**Examples:**
+
+| Library | Example | Description |
+|---------|---------|-------------|
+| [cURL](https://www.php.net/manual/en/book.curl.php) | [curl_proxy.php](php/curl_proxy.php) | PHP's built-in HTTP client (libcurl) |
+| [Guzzle](https://docs.guzzlephp.org/) | [guzzle_proxy.php](php/guzzle_proxy.php) | Most popular PHP HTTP client |
+| [Symfony HttpClient](https://symfony.com/doc/current/http_client.html) | [symfony_http_client_proxy.php](php/symfony_http_client_proxy.php) | Modern PSR-18 HTTP client |
+| [Buzz](https://github.com/kriswallsmith/Buzz) | [buzz_proxy.php](php/buzz_proxy.php) | Simple PSR-18 HTTP client |
+| [PHP Streams](https://www.php.net/manual/en/book.stream.php) | [streams_proxy.php](php/streams_proxy.php) | Built-in PHP streams (file_get_contents) |
+| [Amp HTTP](https://amphp.org/http-client) | [amphp_proxy.php](php/amphp_proxy.php) | Async HTTP client |
+
+> **Note:** See [php-proxy-headers](https://github.com/proxymeshai/php-proxy-headers) for extensions that add custom proxy header support.
 
 These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
 
@@ -189,7 +269,7 @@ More examples and language-specific proxy-header tooling:
 
 ## Contributing
 
-Contributions are welcome for all supported languages in this repository (Python, JavaScript, and Ruby), as well as new language examples.
+Contributions are welcome for all supported languages in this repository (Python, JavaScript, Ruby, and PHP), as well as new language examples.
 
 When opening a Pull Request:
 
