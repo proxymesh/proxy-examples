@@ -9,69 +9,57 @@ Example code for using proxy servers in different programming languages. Current
 
 ## Python Proxy Examples
 
-### Using python-proxy-headers
-
-The [python-proxy-headers](https://github.com/proxymesh/python-proxy-headers) library enables sending custom headers to proxy servers and receiving proxy response headers. This is essential for services like [ProxyMesh](https://proxymesh.com) that use custom headers for country selection and IP assignment.
-
 **Installation:**
 
 ```bash
-pip install python-proxy-headers
+pip install -r python/requirements.txt
 ```
 
-**Running Examples:**
+`pycurl` needs libcurl and `curl-config` (for example Debian/Ubuntu: `libcurl4-openssl-dev`). The test runner skips `pycurl-*` examples when `pycurl` is not installed, and skips `scrapy-proxy` when `import scrapy` fails (for example a broken `cryptography` / `cffi` install).
 
-All examples read proxy configuration from environment variables:
+**Running Examples:**
 
 ```bash
 # Required: Set your proxy URL
 export PROXY_URL='http://user:pass@proxy.example.com:8080'
 
-# Optional: Custom test URL (default: https://api.ipify.org?format=json)
+# Optional: Target URL (default: https://api.ipify.org?format=json)
 export TEST_URL='https://httpbin.org/ip'
 
-# Optional: Send a custom header to the proxy
-export PROXY_HEADER='X-ProxyMesh-Country'
-export PROXY_VALUE='US'
-
-# Optional: Read a specific header from the response
+# Optional: Print one response header
 export RESPONSE_HEADER='X-ProxyMesh-IP'
 
-# Run a single example
-python python/requests-proxy-headers.py
+# Single example
+python python/requests-proxy.py
 
-# Run all examples as tests
+# All examples as tests
 python python/run_tests.py
 
-# Run specific examples
-python python/run_tests.py requests-proxy-headers httpx-proxy-headers
+# Specific examples (substring match, like the JS runner)
+python python/run_tests.py requests httpx
 ```
 
 **Examples:**
 
 | Library | Example | Description |
 |---------|---------|-------------|
-| [requests](https://docs.python-requests.org/) | [requests-proxy-headers.py](python/requests-proxy-headers.py) | Simple HTTP requests with proxy headers |
-| [requests](https://docs.python-requests.org/) | [requests-proxy-headers-session.py](python/requests-proxy-headers-session.py) | Session-based requests for connection pooling |
-| [urllib3](https://urllib3.readthedocs.io/) | [urllib3-proxy-headers.py](python/urllib3-proxy-headers.py) | Low-level HTTP client with proxy headers |
-| [aiohttp](https://docs.aiohttp.org/) | [aiohttp-proxy-headers.py](python/aiohttp-proxy-headers.py) | Async HTTP client with proxy headers |
-| [httpx](https://www.python-httpx.org/) | [httpx-proxy-headers.py](python/httpx-proxy-headers.py) | Modern HTTP client with proxy headers |
-| [httpx](https://www.python-httpx.org/) | [httpx-async-proxy-headers.py](python/httpx-async-proxy-headers.py) | Async httpx with proxy headers |
-| [pycurl](http://pycurl.io/) | [pycurl-proxy-headers.py](python/pycurl-proxy-headers.py) | libcurl bindings with proxy headers |
-| [pycurl](http://pycurl.io/) | [pycurl-proxy-headers-lowlevel.py](python/pycurl-proxy-headers-lowlevel.py) | Low-level pycurl integration |
-| [cloudscraper](https://github.com/venomous/cloudscraper) | [cloudscraper-proxy-headers.py](python/cloudscraper-proxy-headers.py) | Cloudflare bypass with proxy headers |
-| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy-headers.py](python/autoscraper-proxy-headers.py) | Automatic web scraping with proxy headers |
+| [requests](https://docs.python-requests.org/) | [requests-proxy.py](python/requests-proxy.py) | Basic `GET` with `proxies=` |
+| [requests](https://docs.python-requests.org/) | [requests-session-proxy.py](python/requests-session-proxy.py) | Session with pooled connections |
+| [urllib3](https://urllib3.readthedocs.io/) | [urllib3-proxy.py](python/urllib3-proxy.py) | `ProxyManager` |
+| [aiohttp](https://docs.aiohttp.org/) | [aiohttp-proxy.py](python/aiohttp-proxy.py) | Async client, `proxy=` on the request |
+| [httpx](https://www.python-httpx.org/) | [httpx-proxy.py](python/httpx-proxy.py) | Sync client, `proxy=` on the client |
+| [httpx](https://www.python-httpx.org/) | [httpx-async-proxy.py](python/httpx-async-proxy.py) | Async client |
+| [pycurl](http://pycurl.io/) | [pycurl-proxy.py](python/pycurl-proxy.py) | libcurl via `PROXY` |
+| [pycurl](http://pycurl.io/) | [pycurl-proxy-lowlevel.py](python/pycurl-proxy-lowlevel.py) | Same flow with explicit `setopt` calls |
+| [cloudscraper](https://github.com/VeNoMouS/cloudscraper) | [cloudscraper-proxy.py](python/cloudscraper-proxy.py) | Requests-based scraper with `proxies` |
+| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy.py](python/autoscraper-proxy.py) | Proxied `requests` pattern (same kwargs as `request_args` on `build()`) |
+| [Scrapy](https://scrapy.org/) | [scrapy-proxy.py](python/scrapy-proxy.py) | `scrapy runspider` with `meta['proxy']` |
 
-> **Note:** Most Python HTTP libraries do not expose custom headers on HTTPS `CONNECT` tunneling by default. These examples use [python-proxy-headers](https://github.com/proxymesh/python-proxy-headers) adapters to send proxy headers and read proxy response headers consistently.
+### Other Python scripts
 
-### Basic Proxy Examples
-
-* [requests-proxy.py](python/requests-proxy.py) - Basic proxy usage with requests
 * [requests-random-proxy.py](python/requests-random-proxy.py) - Random proxy rotation
 
-### Scrapy
-
-* [scrapy-proxy-headers.py](python/scrapy-proxy-headers.py) - Scrapy spider with proxy headers
+> **Note:** Like the Ruby, JavaScript, and PHP examples here, these scripts use each library's normal proxy options only. Most of them do not send custom headers on the HTTPS `CONNECT` tunnel or surface proxy `CONNECT` response headers. For that, see [python-proxy-headers](https://github.com/proxymesh/python-proxy-headers) or [scrapy-proxy-headers](https://github.com/proxymesh/scrapy-proxy-headers).
 
 ## JavaScript / Node.js Proxy Examples
 
