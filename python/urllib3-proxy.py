@@ -19,6 +19,7 @@ Documentation: https://urllib3.readthedocs.io/en/stable/reference/urllib3.poolma
 """
 import os
 import sys
+from urllib.parse import urlparse, urlunparse
 
 import urllib3
 
@@ -30,7 +31,23 @@ if not proxy_url:
 test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
 response_header = os.environ.get('RESPONSE_HEADER')
 
-http = urllib3.ProxyManager(proxy_url, retries=False)
+parsed = urlparse(proxy_url)
+pool_kw = {'retries': False}
+if parsed.username is not None:
+    # Some stacks omit CONNECT credentials unless they are sent as Proxy-Authorization.
+    user = parsed.username
+    password = parsed.password or ''
+    pool_kw['proxy_headers'] = urllib3.util.make_headers(
+        proxy_basic_auth=f'{user}:{password}'
+    )
+    host = parsed.hostname or ''
+    if parsed.port:
+        host = f'{host}:{parsed.port}'
+    proxy_for_pool = urlunparse((parsed.scheme, host, '', '', '', ''))
+else:
+    proxy_for_pool = proxy_url
+
+http = urllib3.ProxyManager(proxy_for_pool, **pool_kw)
 response = http.request('GET', test_url, timeout=urllib3.Timeout(30))
 
 body = response.data.decode('utf-8', errors='replace')
