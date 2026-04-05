@@ -31,10 +31,10 @@ jobs:
       - name: Install system dependencies (pycurl)
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
 
-      - name: Install python-proxy-headers and example dependencies
+      - name: Install example dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install python-proxy-headers requests urllib3 aiohttp httpx cloudscraper autoscraper pycurl
+          pip install -r python/requirements.txt
 
       - name: Require PROXY_URL Actions secret
         env:
