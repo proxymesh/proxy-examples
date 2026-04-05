@@ -11,6 +11,10 @@ urllib3's :class:`urllib3.ProxyManager` routes traffic through the proxy. It doe
 not support sending custom headers on the HTTPS CONNECT request or reading proxy
 CONNECT response headers (see python-proxy-headers for that).
 
+Default urllib3 retries repeat HTTPS CONNECT through the proxy; some providers
+return errors such as ``407 too many failures`` when that happens, so retries
+are disabled here.
+
 Documentation: https://urllib3.readthedocs.io/en/stable/reference/urllib3.poolmanager.html
 """
 import os
@@ -26,7 +30,7 @@ if not proxy_url:
 test_url = os.environ.get('TEST_URL', 'https://api.ipify.org?format=json')
 response_header = os.environ.get('RESPONSE_HEADER')
 
-http = urllib3.ProxyManager(proxy_url)
+http = urllib3.ProxyManager(proxy_url, retries=False)
 response = http.request('GET', test_url, timeout=urllib3.Timeout(30))
 
 body = response.data.decode('utf-8', errors='replace')
