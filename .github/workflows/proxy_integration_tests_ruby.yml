@@ -1,0 +1,46 @@
+# Integration tests against a real proxy (PROXY_URL). Add repository secret PROXY_URL
+# under Settings → Secrets and variables → Actions, then mark this workflow as a required
+# status check under branch protection (pull_request events only receive secrets for PRs
+# from the same repository, not from forks).
+
+name: Proxy integration tests (Ruby)
+
+on:
+  pull_request:
+    paths:
+      - "ruby/**"
+      - ".github/workflows/proxy_integration_tests_ruby.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@2e007403fc1ec238429ecaa57af6f22f019cc135 # v1.234.0
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: ruby
+
+      - name: Require PROXY_URL Actions secret
+        env:
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+        run: |
+          if [ -z "${PROXY_URL}" ]; then
+            echo "::error::PROXY_URL is not set. Add a repository (or environment) secret named PROXY_URL under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Run integration tests
+        working-directory: ruby
+        env:
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+        run: bundle exec ruby run_tests.rb

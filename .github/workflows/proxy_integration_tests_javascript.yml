@@ -3,10 +3,13 @@
 # status check under branch protection (pull_request events only receive secrets for PRs
 # from the same repository, not from forks).
 
-name: Proxy integration tests
+name: Proxy integration tests (JavaScript)
 
 on:
   pull_request:
+    paths:
+      - "javascript/**"
+      - ".github/workflows/proxy_integration_tests_javascript.yml"
 
 permissions:
   contents: read

@@ -1,0 +1,52 @@
+# Integration tests against a real proxy (PROXY_URL). Add repository secret PROXY_URL
+# under Settings → Secrets and variables → Actions, then mark this workflow as a required
+# status check under branch protection (pull_request events only receive secrets for PRs
+# from the same repository, not from forks).
+
+name: Proxy integration tests (Python)
+
+on:
+  pull_request:
+    paths:
+      - "python/**"
+      - ".github/workflows/proxy_integration_tests_python.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install system dependencies (pycurl)
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+
+      - name: Install python-proxy-headers and example dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-proxy-headers requests urllib3 aiohttp httpx cloudscraper autoscraper pycurl
+
+      - name: Require PROXY_URL Actions secret
+        env:
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+        run: |
+          if [ -z "${PROXY_URL}" ]; then
+            echo "::error::PROXY_URL is not set. Add a repository (or environment) secret named PROXY_URL under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Run integration tests
+        working-directory: python
+        env:
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+        run: python run_tests.py
