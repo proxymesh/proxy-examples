@@ -7,6 +7,7 @@ httpx>=0.27.0
 pycurl>=7.45.0; platform_system != "Windows"
 cloudscraper>=1.2.71
 autoscraper>=1.1.0
-beautifulsoup4>=4.12.0
+# autoscraper 1.1.x fails build() with beautifulsoup4 4.13+ (empty learned list); keep 4.12.x
+beautifulsoup4>=4.12.0,<4.13
 lxml>=5.0.0
 scrapy>=2.11.0
