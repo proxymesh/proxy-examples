@@ -52,7 +52,7 @@ python python/run_tests.py requests httpx
 | [pycurl](http://pycurl.io/) | [pycurl-proxy.py](python/pycurl-proxy.py) | libcurl via `PROXY` |
 | [pycurl](http://pycurl.io/) | [pycurl-proxy-lowlevel.py](python/pycurl-proxy-lowlevel.py) | Same flow with explicit `setopt` calls |
 | [cloudscraper](https://github.com/VeNoMouS/cloudscraper) | [cloudscraper-proxy.py](python/cloudscraper-proxy.py) | Requests-based scraper with `proxies` |
-| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy.py](python/autoscraper-proxy.py) | Proxied `requests` pattern (same kwargs as `request_args` on `build()`) |
+| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy.py](python/autoscraper-proxy.py) | `build()` + `get_result_similar()` on HTML via `request_args` (default `example.com`, optional `WANTED_TEXT`) |
 | [Scrapy](https://scrapy.org/) | [scrapy-proxy.py](python/scrapy-proxy.py) | `scrapy runspider` with `meta['proxy']` |
 
 ### Other Python scripts
