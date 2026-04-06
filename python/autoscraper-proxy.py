@@ -7,17 +7,20 @@ Configuration via environment variables:
     TEST_URL        - HTML page to scrape (default: https://example.com/)
     WANTED_TEXT     - Comma-separated substrings AutoScraper should learn to extract
                       (default: Example Domain, matching the default TEST_URL)
-    RESPONSE_HEADER - Optional header name to print from the first response
 
-AutoScraper is built for HTML pages (BeautifulSoup + rules), not raw JSON APIs.
-Pass ``proxies`` through ``request_args`` on ``build()`` and ``get_result_similar()``.
+AutoScraper downloads pages with ``requests`` internally (see ``AutoScraper._fetch_html``).
+This script does not import ``requests`` itself: pass ``proxies`` and other ``requests``
+keyword arguments only through ``request_args`` on ``build()`` and ``get_result_similar()``,
+which is how you use a proxy with AutoScraper in real code.
+
+AutoScraper targets HTML (BeautifulSoup + rules), not raw JSON APIs. For a simple proxied
+``GET`` with status and headers printed, use ``requests-proxy.py``.
 
 Documentation: https://github.com/alirezamika/autoscraper
 """
 import os
 import sys
 
-import requests
 from autoscraper import AutoScraper
 
 proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
@@ -26,18 +29,11 @@ if not proxy_url:
     sys.exit(1)
 
 test_url = os.environ.get('TEST_URL', 'https://example.com/')
-response_header = os.environ.get('RESPONSE_HEADER')
 wanted_raw = os.environ.get('WANTED_TEXT', 'Example Domain')
 wanted_list = [s.strip() for s in wanted_raw.split(',') if s.strip()]
 
 proxies = {'http': proxy_url, 'https': proxy_url}
 request_args = {'proxies': proxies, 'timeout': 30}
-
-# Same pattern as other examples: show status from requests.
-probe = requests.get(test_url, **request_args)
-print(f'Status: {probe.status_code}')
-if response_header:
-    print(f'{response_header}: {probe.headers.get(response_header)}')
 
 scraper = AutoScraper()
 learned = scraper.build(test_url, wanted_list=wanted_list, request_args=request_args)
