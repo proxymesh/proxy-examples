@@ -5,39 +5,74 @@ AutoScraper with an HTTP proxy.
 Configuration via environment variables:
     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
     TEST_URL        - HTML page to scrape (default: https://httpbin.org/html)
-    WANTED_TEXT     - Comma-separated substrings AutoScraper should learn to extract
-                      (default: matches the <h1> on the default page)
+    WANTED_TEXT     - Optional comma-separated substrings for ``wanted_list``. If unset,
+                      the script reads the page once and derives a target from the first
+                      ``<h1>`` (then ``<title>``, then first ``<p>``) so the string always
+                      matches what AutoScraper actually receives (hard-coded defaults fail in
+                      CI when proxies change whitespace or encoding).
 
-AutoScraper downloads pages with ``requests`` internally (see ``AutoScraper._fetch_html``).
-This script does not import ``requests`` itself: pass ``proxies`` and other ``requests``
-keyword arguments only through ``request_args`` on ``build()`` and ``get_result_similar()``,
-which is how you use a proxy with AutoScraper in real code.
-
-AutoScraper targets HTML (BeautifulSoup + rules), not raw JSON APIs. For a simple proxied
-``GET`` with status and headers printed, use ``requests-proxy.py``.
+AutoScraper downloads with ``requests`` via ``AutoScraper._fetch_html``; ``build()`` and
+``get_result_similar()`` use ``request_args`` for the proxy.
 
 Documentation: https://github.com/alirezamika/autoscraper
 """
 import os
 import sys
+from typing import List
 
 from autoscraper import AutoScraper
+from bs4 import BeautifulSoup
 
 proxy_url = os.environ.get('PROXY_URL') or os.environ.get('HTTPS_PROXY')
 if not proxy_url:
     print('Error: Set PROXY_URL environment variable', file=sys.stderr)
     sys.exit(1)
 
-# httpbin.org/html is stable test HTML; example.com is often blocked or rewritten in CI.
 test_url = os.environ.get('TEST_URL', 'https://httpbin.org/html')
-wanted_raw = os.environ.get('WANTED_TEXT', 'Herman Melville - Moby-Dick')
-wanted_list = [s.strip() for s in wanted_raw.split(',') if s.strip()]
+wanted_raw = os.environ.get('WANTED_TEXT')
 
 proxies = {'http': proxy_url, 'https': proxy_url}
 request_args = {'proxies': proxies, 'timeout': 30}
 
+
+def wanted_list_from_html(html: str) -> List[str]:
+    """Pick a substring that definitely exists in this HTML for AutoScraper to learn."""
+    soup = BeautifulSoup(html, 'lxml')
+    for tag_name in ('h1', 'h2', 'title'):
+        tag = soup.find(tag_name)
+        if tag:
+            text = tag.get_text(strip=True)
+            if text:
+                return [text]
+    for p in soup.find_all('p'):
+        text = p.get_text(strip=True)
+        if len(text) >= 12:
+            return [text[:240]]
+    stripped = soup.get_text(strip=True)
+    if len(stripped) >= 8:
+        return [stripped[:240]]
+    return []
+
+
+html = AutoScraper._fetch_html(test_url, request_args=request_args)
+if not html or not html.strip():
+    print('Error: Empty response body from proxy fetch', file=sys.stderr)
+    sys.exit(1)
+
+if wanted_raw:
+    wanted_list = [s.strip() for s in wanted_raw.split(',') if s.strip()]
+else:
+    wanted_list = wanted_list_from_html(html)
+    if not wanted_list:
+        print(
+            'Error: Could not derive WANTED_TEXT from HTML (no headings or text).',
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
 scraper = AutoScraper()
-learned = scraper.build(test_url, wanted_list=wanted_list, request_args=request_args)
+learned = scraper.build(html=html, url=test_url, wanted_list=wanted_list)
+print(f'AutoScraper wanted_list: {wanted_list}')
 print(f'AutoScraper build (values used to learn rules): {learned}')
 
 similar = scraper.get_result_similar(test_url, request_args=request_args)
@@ -45,8 +80,8 @@ print(f'AutoScraper get_result_similar: {similar}')
 
 if not learned and not similar:
     print(
-        'Note: No matches. Use an HTML TEST_URL and set WANTED_TEXT to text that '
-        'appears on that page.',
+        'Note: No matches. Set WANTED_TEXT to substrings that appear in the page, '
+        'or use an HTML TEST_URL.',
         file=sys.stderr,
     )
     sys.exit(1)
