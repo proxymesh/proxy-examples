@@ -51,7 +51,7 @@ python python/run_tests.py requests httpx
 | [httpx](https://www.python-httpx.org/) | [httpx-async-proxy.py](python/httpx-async-proxy.py) | Async client |
 | [pycurl](http://pycurl.io/) | [pycurl-proxy.py](python/pycurl-proxy.py) | libcurl via `setopt` (`PROXY`, `WRITEDATA`, etc.) |
 | [cloudscraper](https://github.com/VeNoMouS/cloudscraper) | [cloudscraper-proxy.py](python/cloudscraper-proxy.py) | Requests-based scraper with `proxies` |
-| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy.py](python/autoscraper-proxy.py) | `build()` + `get_result_similar()`; derives `wanted_list` from the fetched HTML unless `WANTED_TEXT` is set |
+| [autoscraper](https://github.com/alirezamika/autoscraper) | [autoscraper-proxy.py](python/autoscraper-proxy.py) | Proxied fetch, then `build`/`get_result_similar` on same HTML (`normalize`/`unescape` must match AutoScraper) |
 | [Scrapy](https://scrapy.org/) | [scrapy-proxy.py](python/scrapy-proxy.py) | `scrapy runspider` with `meta['proxy']` |
 
 ### Other Python scripts
