@@ -6,7 +6,8 @@ Configuration via environment variables:
     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
     TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
 
-Requires libcurl development headers to install the ``pycurl`` package.
+Requires libcurl development headers to install the ``pycurl`` package. Options are
+set with :meth:`pycurl.Curl.setopt` like any libcurl binding.
 
 Documentation: https://pycurl.io/docs/latest/curlobject.html
 """
@@ -30,6 +31,7 @@ try:
     c.setopt(pycurl.PROXY, proxy_url)
     c.setopt(pycurl.FOLLOWLOCATION, 1)
     c.setopt(pycurl.TIMEOUT, 30)
+    c.setopt(pycurl.SSL_VERIFYPEER, 1)
     c.setopt(pycurl.WRITEDATA, buffer)
     c.perform()
     status = c.getinfo(pycurl.RESPONSE_CODE)

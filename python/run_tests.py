@@ -27,7 +27,6 @@ EXAMPLES = [
     'httpx-proxy',
     'httpx-async-proxy',
     'pycurl-proxy',
-    'pycurl-proxy-lowlevel',
     'cloudscraper-proxy',
     'autoscraper-proxy',
     'scrapy-proxy',
