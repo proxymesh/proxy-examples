@@ -4,9 +4,9 @@ AutoScraper with an HTTP proxy.
 
 Configuration via environment variables:
     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
-    TEST_URL        - HTML page to scrape (default: https://example.com/)
+    TEST_URL        - HTML page to scrape (default: https://httpbin.org/html)
     WANTED_TEXT     - Comma-separated substrings AutoScraper should learn to extract
-                      (default: Example Domain, matching the default TEST_URL)
+                      (default: matches the <h1> on the default page)
 
 AutoScraper downloads pages with ``requests`` internally (see ``AutoScraper._fetch_html``).
 This script does not import ``requests`` itself: pass ``proxies`` and other ``requests``
@@ -28,8 +28,9 @@ if not proxy_url:
     print('Error: Set PROXY_URL environment variable', file=sys.stderr)
     sys.exit(1)
 
-test_url = os.environ.get('TEST_URL', 'https://example.com/')
-wanted_raw = os.environ.get('WANTED_TEXT', 'Example Domain')
+# httpbin.org/html is stable test HTML; example.com is often blocked or rewritten in CI.
+test_url = os.environ.get('TEST_URL', 'https://httpbin.org/html')
+wanted_raw = os.environ.get('WANTED_TEXT', 'Herman Melville - Moby-Dick')
 wanted_list = [s.strip() for s in wanted_raw.split(',') if s.strip()]
 
 proxies = {'http': proxy_url, 'https': proxy_url}
