@@ -34,6 +34,16 @@ Rules:
 - Mask proxy passwords when printing URLs in test runners.
 - Keep examples runnable with only `PROXY_URL`.
 
+## Privilege and Install Policy (Non-Negotiable)
+
+- Do not run commands requiring `sudo`, root, or system-level package installation.
+- If dependencies are needed, prefer user-space installation approaches first (language package managers, local virtual environments, project-local toolchains, non-root install flags).
+- If a required dependency is not feasible without elevated privileges:
+  1. Stop before attempting privileged commands.
+  2. Output the exact install command the user must run.
+  3. Explain briefly what is needed and why it cannot be completed in user space.
+  4. Resume only after the user confirms the dependency is installed.
+
 ## Implementation Workflow
 
 Use this checklist and complete each phase.
@@ -85,6 +95,8 @@ Use these prompts internally at each phase so execution is autonomous and does n
 - "What is the idiomatic dependency manifest and lockfile for this language?"
 - "Did I include only dependencies needed for examples and the runner?"
 - "Are install commands reproducible enough for CI?"
+- "Can setup be completed entirely in user space without `sudo` or root?"
+- "If not, did I stop and provide exact privileged install commands with a short why?"
 
 ### Phase 7 prompts
 - "Does the workflow trigger on `pull_request` with correct path filters?"

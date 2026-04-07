@@ -122,3 +122,16 @@ When finishing a new language addition, report:
 ```bash
 PROXY_URL='http://user:pass@host:port' <language-test-command>
 ```
+
+## 6) No-Root Execution Rule
+
+- Never run `sudo` or root-required commands while implementing the task.
+- Prefer user-space installs first:
+  - local virtual environment or user-site installs
+  - language package manager installs scoped to project/user
+  - project-local toolchain managers where applicable
+- If a dependency truly requires elevated privileges:
+  1. Stop immediately.
+  2. Provide the exact command the user should run.
+  3. Explain what dependency is required and why user-space install is not sufficient.
+  4. Continue only after user confirmation.
