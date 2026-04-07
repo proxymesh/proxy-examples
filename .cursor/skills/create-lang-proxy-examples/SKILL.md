@@ -50,6 +50,57 @@ Progress:
 - [ ] Phase 8: Run tests/lint and polish docs/comments
 ```
 
+## Internal Self-Prompts (Use by Default)
+
+Use these prompts internally at each phase so execution is autonomous and does not block on user feedback unless absolutely necessary.
+
+### Phase 1 prompts
+- "What exact naming, runner UX, and env var conventions are shared by `javascript/`, `python/`, `php/`, and `ruby/`?"
+- "What is the minimum parity bar I must hit so the new language folder feels native to this repo?"
+- "Which conventions are required vs optional niceties?"
+
+### Phase 2 prompts
+- "What are the top maintained HTTP client libraries in this language right now?"
+- "For each client, how do I configure proxies and what proxy-related limitations exist?"
+- "Which 5+ libraries give a practical spread across standard, mainstream, and lower-level APIs?"
+- "Which capabilities can I verify directly from docs/code/examples vs assumptions I should avoid?"
+
+### Phase 3 prompts
+- "Which subset is the best v1 that is broad enough but still reliably testable in CI?"
+- "How should I classify each selected client (`full`, `proxy-only`, `limited`)?"
+- "What naming pattern should each example file use to match this repo?"
+
+### Phase 4 prompts
+- "Does each example fail fast on missing proxy config and exit non-zero on error?"
+- "Does each example read `TEST_URL` with the default fallback?"
+- "Where supported, have I wired optional `PROXY_HEADER`/`PROXY_VALUE`/`RESPONSE_HEADER` behavior without overpromising?"
+- "Is each script simple and demonstrative rather than framework-heavy?"
+
+### Phase 5 prompts
+- "Does `run_tests` support help/list/filtering and produce clear CI-friendly output?"
+- "Are subprocess invocation, timeout behavior, and pass/fail accounting robust?"
+- "Are proxy credentials masked anywhere URLs are printed?"
+
+### Phase 6 prompts
+- "What is the idiomatic dependency manifest and lockfile for this language?"
+- "Did I include only dependencies needed for examples and the runner?"
+- "Are install commands reproducible enough for CI?"
+
+### Phase 7 prompts
+- "Does the workflow trigger on `pull_request` with correct path filters?"
+- "Does it explicitly fail when `secrets.PROXY_URL` is missing?"
+- "Are runtime setup and test commands correct for this language folder?"
+- "Are comments consistent with existing workflow guidance in this repo?"
+
+### Phase 8 prompts
+- "Did I run the local harness (or explain why I could not)?"
+- "Do list/help/filtering and exit codes behave correctly?"
+- "Are limitations documented truthfully with no unverified claims?"
+- "Is the final handoff concise: selected libraries, limitations, files changed, and exact test command?"
+
+### Escalation prompt (only when blocked)
+- "Can I proceed with a safe default and document assumptions, or is a user decision truly required?"
+
 ## Phase 1 - Mirror Existing Repository Conventions
 
 Follow these conventions already used in this repo:
