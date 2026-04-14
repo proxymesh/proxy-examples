@@ -7,9 +7,6 @@ name: Proxy integration tests (JavaScript)
 
 on:
   pull_request:
-    paths:
-      - "javascript/**"
-      - ".github/workflows/proxy_integration_tests_javascript.yml"
 
 permissions:
   contents: read
@@ -23,7 +20,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Detect JavaScript changes
+        id: changes
+        run: |
+          set -euo pipefail
+          changed="false"
+          while IFS= read -r file; do
+            case "${file}" in
+              javascript/*|.github/workflows/proxy_integration_tests_javascript.yml)
+                changed="true"
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}")
+          echo "changed=${changed}" >> "${GITHUB_OUTPUT}"
+
       - name: Set up Node
+        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0 (Node 24)
         with:
           node-version: "24"
@@ -31,10 +44,12 @@ jobs:
           cache-dependency-path: javascript/package-lock.json
 
       - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
         working-directory: javascript
         run: npm ci
 
       - name: Require PROXY_URL Actions secret
+        if: steps.changes.outputs.changed == 'true'
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
@@ -44,7 +59,12 @@ jobs:
           fi
 
       - name: Run integration tests
+        if: steps.changes.outputs.changed == 'true'
         working-directory: javascript
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: npm test
+
+      - name: Skip when JavaScript files are unchanged
+        if: steps.changes.outputs.changed != 'true'
+        run: echo "No JavaScript integration test changes detected; skipping."

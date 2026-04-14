@@ -7,9 +7,6 @@ name: Proxy integration tests (PHP)
 
 on:
   pull_request:
-    paths:
-      - "php/**"
-      - ".github/workflows/proxy_integration_tests_php.yml"
 
 permissions:
   contents: read
@@ -23,7 +20,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Detect PHP changes
+        id: changes
+        run: |
+          set -euo pipefail
+          changed="false"
+          while IFS= read -r file; do
+            case "${file}" in
+              php/*|.github/workflows/proxy_integration_tests_php.yml)
+                changed="true"
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}")
+          echo "changed=${changed}" >> "${GITHUB_OUTPUT}"
+
       - name: Set up PHP
+        if: steps.changes.outputs.changed == 'true'
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
@@ -31,10 +44,12 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
+        if: steps.changes.outputs.changed == 'true'
         working-directory: php
         run: composer install --no-interaction --prefer-dist
 
       - name: Require PROXY_URL Actions secret
+        if: steps.changes.outputs.changed == 'true'
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
@@ -44,7 +59,12 @@ jobs:
           fi
 
       - name: Run integration tests
+        if: steps.changes.outputs.changed == 'true'
         working-directory: php
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: php run_tests.php
+
+      - name: Skip when PHP files are unchanged
+        if: steps.changes.outputs.changed != 'true'
+        run: echo "No PHP integration test changes detected; skipping."

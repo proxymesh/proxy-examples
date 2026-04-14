@@ -7,9 +7,6 @@ name: Proxy integration tests (Ruby)
 
 on:
   pull_request:
-    paths:
-      - "ruby/**"
-      - ".github/workflows/proxy_integration_tests_ruby.yml"
 
 permissions:
   contents: read
@@ -23,7 +20,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Detect Ruby changes
+        id: changes
+        run: |
+          set -euo pipefail
+          changed="false"
+          while IFS= read -r file; do
+            case "${file}" in
+              ruby/*|.github/workflows/proxy_integration_tests_ruby.yml)
+                changed="true"
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}")
+          echo "changed=${changed}" >> "${GITHUB_OUTPUT}"
+
       - name: Set up Ruby
+        if: steps.changes.outputs.changed == 'true'
         uses: ruby/setup-ruby@3ff19f5e2baf30647122352b96108b1fbe250c64 # v1.299.0 (Node 24)
         with:
           ruby-version: "3.3"
@@ -31,6 +44,7 @@ jobs:
           working-directory: ruby
 
       - name: Require PROXY_URL Actions secret
+        if: steps.changes.outputs.changed == 'true'
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
@@ -40,7 +54,12 @@ jobs:
           fi
 
       - name: Run integration tests
+        if: steps.changes.outputs.changed == 'true'
         working-directory: ruby
         env:
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: bundle exec ruby run_tests.rb
+
+      - name: Skip when Ruby files are unchanged
+        if: steps.changes.outputs.changed != 'true'
+        run: echo "No Ruby integration test changes detected; skipping."
