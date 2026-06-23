@@ -7,15 +7,29 @@ name: Proxy integration tests (Python)
 
 on:
   pull_request:
-    paths:
-      - "python/**"
-      - ".github/workflows/proxy_integration_tests_python.yml"
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      - name: Detect Python changes
+        id: filter
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+        with:
+          filters: |
+            relevant:
+              - "python/**"
+              - ".github/workflows/proxy_integration_tests_python.yml"
+
   integration:
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
 
     steps:

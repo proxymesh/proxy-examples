@@ -1,0 +1,46 @@
+# Approve Dependabot pull requests and enable auto-merge so GitHub merges them once
+# required status checks pass. Enable "Allow auto-merge" under Settings → General →
+# Pull Requests, and require status checks on the default branch. See:
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+
+name: Dependabot auto-approve and merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@ffa630c65fa7e0ecfa0625b5ceda64399aea1b36 # v3.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve pull request
+        run: |
+          set -euo pipefail
+          if [ "$(gh pr view "${PR_NUMBER}" --json reviewDecision -q .reviewDecision)" != "APPROVED" ]; then
+            gh pr review --approve "${PR_NUMBER}"
+          fi
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge
+        run: |
+          set -euo pipefail
+          if [ "$(gh pr view "${PR_NUMBER}" --json autoMergeRequest -q '.autoMergeRequest != null')" != "true" ]; then
+            gh pr merge --auto --merge "${PR_NUMBER}"
+          fi
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
