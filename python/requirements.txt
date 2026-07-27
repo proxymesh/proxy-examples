@@ -11,3 +11,5 @@ autoscraper>=1.1.0
 beautifulsoup4>=4.12.0,<4.13
 lxml>=5.0.0
 scrapy>=2.11.0
+# Optional: only needed for curl-cffi-waterfall-proxy.py (Tier 0.5 TLS fingerprint)
+# curl_cffi>=0.6.0

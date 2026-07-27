@@ -57,6 +57,46 @@ python python/run_tests.py requests httpx
 ### Other Python scripts
 
 * [requests-random-proxy.py](python/requests-random-proxy.py) - Random proxy rotation
+* [requests-waterfall-proxy.py](python/requests-waterfall-proxy.py) - Ordered proxy waterfall (cheap tiers first)
+* [requests-waterfall-cache-proxy.py](python/requests-waterfall-cache-proxy.py) - Waterfall with TTL decision cache per host
+* [curl-cffi-waterfall-proxy.py](python/curl-cffi-waterfall-proxy.py) - Waterfall with free TLS-fingerprint tier (`curl_cffi`)
+
+These waterfall examples follow the [proxy waterfall](https://dev.to/votiakov/anti-bot-without-melting-your-budget-the-proxy-waterfall-4a04) pattern: try direct (and optionally TLS impersonation) before datacenter / residential / unlocker proxies, escalate only when content validation fails, and optionally remember the winning tier. Shared helpers live in [waterfall_common.py](python/waterfall_common.py). They are not part of `run_tests.py`.
+
+```bash
+# At least one proxy tier required
+export PROXY_URL='http://user:pass@proxy.example.com:8080'
+# Optional more expensive tiers
+export PROXY_URL_RESIDENTIAL='http://user:pass@residential.example:8080'
+export PROXY_URL_UNLOCKER='http://user:pass@unlocker.example:8080'
+
+# Optional content checks (defaults work with api.ipify.org)
+export EXPECT_MUST_CONTAIN='ip'
+export EXPECT_MIN_BYTES=10
+
+python python/requests-waterfall-proxy.py
+
+# Decision cache (optional file persistence)
+export WATERFALL_CACHE_PATH=/tmp/waterfall-cache.json
+export WATERFALL_CACHE_TTL=86400
+python python/requests-waterfall-cache-proxy.py
+
+# TLS fingerprint tier (install optional dep first)
+pip install 'curl_cffi>=0.6.0'
+python python/curl-cffi-waterfall-proxy.py
+```
+
+| Variable | Purpose |
+|----------|---------|
+| `PROXY_URL` / `PROXY_URL_DATACENTER` | Datacenter tier (also `HTTPS_PROXY`) |
+| `PROXY_URL_RESIDENTIAL` | Residential tier |
+| `PROXY_URL_UNLOCKER` | Managed anti-bot / unlocker tier |
+| `EXPECT_STATUS` | Required HTTP status (default `200`) |
+| `EXPECT_MIN_BYTES` | Minimum body length (default `0`) |
+| `EXPECT_MUST_CONTAIN` | Required body substring |
+| `EXPECT_BLOCK_MARKERS` | Extra soft-block markers (comma-separated) |
+| `WATERFALL_CACHE_TTL` | Cache TTL seconds (default `86400`) |
+| `WATERFALL_CACHE_PATH` | Optional JSON cache file |
 
 > **Note:** Like the Ruby, JavaScript, and PHP examples here, these scripts use each library's normal proxy options only. Most of them do not send custom headers on the HTTPS `CONNECT` tunnel or surface proxy `CONNECT` response headers. For that, see [python-proxy-headers](https://github.com/proxymesh/python-proxy-headers) or [scrapy-proxy-headers](https://github.com/proxymesh/scrapy-proxy-headers).
 
