@@ -1,0 +1,107 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/javascript"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "automerge"
+    groups:
+      prod-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-all:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
+
+  - package-ecosystem: "pip"
+    directory: "/python"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "automerge"
+    groups:
+      prod-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-all:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
+
+  - package-ecosystem: "bundler"
+    directory: "/ruby"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "automerge"
+    groups:
+      prod-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-all:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
+
+  - package-ecosystem: "composer"
+    directory: "/php"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+      - "automerge"
+    groups:
+      prod-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-all:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+          - "major"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      actions:
+        patterns:
+          - "*"
