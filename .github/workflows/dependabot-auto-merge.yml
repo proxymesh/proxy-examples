@@ -24,9 +24,14 @@ jobs:
     steps:
       - uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
         id: meta
+        with:
+          # Branch updates add non-Dependabot merge commits; still parse Dependabot metadata.
+          skip-commit-verification: true
 
+      # Fail closed: only allowlisted minor/patch types. Empty/unknown update-type must not
+      # approve or merge (e.g. if metadata is missing after an unusual branch history).
       - name: Approve pull request
-        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        if: contains(fromJSON('["version-update:semver-minor","version-update:semver-patch"]'), steps.meta.outputs.update-type)
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json reviewDecision -q .reviewDecision)" != "APPROVED" ]; then
@@ -37,7 +42,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
-        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        if: contains(fromJSON('["version-update:semver-minor","version-update:semver-patch"]'), steps.meta.outputs.update-type)
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json autoMergeRequest -q '.autoMergeRequest != null')" != "true" ]; then
