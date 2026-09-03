@@ -11,4 +11,4 @@ autoscraper>=1.1.0
 # autoscraper 1.1.x fails build() with beautifulsoup4 4.13+ (empty learned list); keep 4.12.x
 beautifulsoup4>=4.12.0,<4.13
 lxml>=6.1.0
-scrapy>=2.14.2
+scrapy>=2.18.0
