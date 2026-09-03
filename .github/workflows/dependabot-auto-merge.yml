@@ -32,11 +32,62 @@ jobs:
           # Branch updates add non-Dependabot merge commits; still parse Dependabot metadata.
           skip-commit-verification: true
 
-      # Fail closed: only allowlisted minor/patch types. Empty/unknown update-type must not
-      # approve or merge (e.g. if metadata is missing after an unusual branch history).
-      # Does not check out or execute PR code — only calls the GitHub API.
+      # Decide eligibility without checking out PR code (GitHub API only).
+      # fetch-metadata often leaves update-type empty for pip requirement-range bumps
+      # ("Update X from >=a to >=b in /dir"), so fall back to title/group heuristics.
+      - name: Determine eligibility
+        id: eligible
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEPENDENCY_GROUP: ${{ steps.meta.outputs.dependency-group }}
+          PR: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          allow=false
+          reason="blocked"
+
+          case "$UPDATE_TYPE" in
+            version-update:semver-major)
+              reason="major-update-type"
+              ;;
+            version-update:semver-minor|version-update:semver-patch)
+              allow=true
+              reason="update-type:$UPDATE_TYPE"
+              ;;
+            *)
+              # Empty/unknown: allow known non-major Dependabot groups.
+              case "$DEPENDENCY_GROUP" in
+                prod-minor-patch|dev-all)
+                  allow=true
+                  reason="dependency-group:$DEPENDENCY_GROUP"
+                  ;;
+                *)
+                  title="$(gh pr view "$PR" --json title -q .title)"
+                  # Match "from [>=~^]*X.Y.Z to [>=~^]*A.B.C", ignoring trailing " in /dir".
+                  if [[ "$title" =~ from[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+)[^[:space:]]*[[:space:]]+to[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+) ]]; then
+                    from_major="${BASH_REMATCH[1]}"
+                    to_major="${BASH_REMATCH[3]}"
+                    if [[ "$from_major" == "$to_major" ]]; then
+                      allow=true
+                      reason="title-non-major:$from_major->$to_major"
+                    else
+                      reason="title-major:$from_major->$to_major"
+                    fi
+                  else
+                    reason="unclassified-update-type"
+                  fi
+                  ;;
+              esac
+              ;;
+          esac
+
+          echo "eligibility allow=$allow reason=$reason update_type=${UPDATE_TYPE:-<empty>} group=${DEPENDENCY_GROUP:-<empty>}"
+          echo "allow=$allow" >> "$GITHUB_OUTPUT"
+
       - name: Approve pull request
-        if: contains(fromJSON('["version-update:semver-minor","version-update:semver-patch"]'), steps.meta.outputs.update-type)
+        if: steps.eligible.outputs.allow == 'true'
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json reviewDecision -q .reviewDecision)" != "APPROVED" ]; then
@@ -47,7 +98,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
-        if: contains(fromJSON('["version-update:semver-minor","version-update:semver-patch"]'), steps.meta.outputs.update-type)
+        if: steps.eligible.outputs.allow == 'true'
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json autoMergeRequest -q '.autoMergeRequest != null')" != "true" ]; then
