@@ -17,11 +17,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      dev-all:
+      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      dev-minor-patch:
         dependency-type: "development"
         update-types:
           - "minor"
           - "patch"
+      dev-major:
+        dependency-type: "development"
+        update-types:
           - "major"
 
   - package-ecosystem: "pip"
@@ -41,11 +45,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      dev-all:
+      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      dev-minor-patch:
         dependency-type: "development"
         update-types:
           - "minor"
           - "patch"
+      dev-major:
+        dependency-type: "development"
+        update-types:
           - "major"
 
   - package-ecosystem: "bundler"
@@ -65,11 +73,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      dev-all:
+      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      dev-minor-patch:
         dependency-type: "development"
         update-types:
           - "minor"
           - "patch"
+      dev-major:
+        dependency-type: "development"
+        update-types:
           - "major"
 
   - package-ecosystem: "composer"
@@ -89,11 +101,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      dev-all:
+      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      dev-minor-patch:
         dependency-type: "development"
         update-types:
           - "minor"
           - "patch"
+      dev-major:
+        dependency-type: "development"
+        update-types:
           - "major"
 
   - package-ecosystem: "github-actions"
