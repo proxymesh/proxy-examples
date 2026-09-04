@@ -15,7 +15,7 @@
     "cheerio": "^1.0.0",
     "got": "^14.4.0",
     "https-proxy-agent": "^7.0.0",
-    "ky": "^1.7.0",
+    "ky": "^2.1.0",
     "make-fetch-happen": "^16.0.1",
     "needle": "^3.5.0",
     "node-fetch": "^3.3.0",
