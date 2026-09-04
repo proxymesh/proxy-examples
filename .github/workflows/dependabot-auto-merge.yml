@@ -34,7 +34,9 @@ jobs:
 
       # Decide eligibility without checking out PR code (GitHub API only).
       # fetch-metadata often leaves update-type empty for pip requirement-range bumps
-      # ("Update X from >=a to >=b in /dir"), so fall back to title/group heuristics.
+      # ("Update X from >=a to >=b in /dir"). Fall back to prod-minor-patch group
+      # membership, otherwise same-major title parsing. Never short-circuit on
+      # dev-all (that group includes majors).
       - name: Determine eligibility
         id: eligible
         env:
@@ -57,29 +59,28 @@ jobs:
               reason="update-type:$UPDATE_TYPE"
               ;;
             *)
-              # Empty/unknown: allow known non-major Dependabot groups.
-              case "$DEPENDENCY_GROUP" in
-                prod-minor-patch|dev-all)
-                  allow=true
-                  reason="dependency-group:$DEPENDENCY_GROUP"
-                  ;;
-                *)
-                  title="$(gh pr view "$PR" --json title -q .title)"
-                  # Match "from [>=~^]*X.Y.Z to [>=~^]*A.B.C", ignoring trailing " in /dir".
-                  if [[ "$title" =~ from[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+)[^[:space:]]*[[:space:]]+to[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+) ]]; then
-                    from_major="${BASH_REMATCH[1]}"
-                    to_major="${BASH_REMATCH[3]}"
-                    if [[ "$from_major" == "$to_major" ]]; then
-                      allow=true
-                      reason="title-non-major:$from_major->$to_major"
-                    else
-                      reason="title-major:$from_major->$to_major"
-                    fi
+              # Empty/unknown: only trust groups that exclude majors. `dev-all`
+              # includes majors, so never short-circuit on that group name —
+              # fall through to title parsing instead.
+              if [[ "$DEPENDENCY_GROUP" == "prod-minor-patch" ]]; then
+                allow=true
+                reason="dependency-group:$DEPENDENCY_GROUP"
+              else
+                title="$(gh pr view "$PR" --json title -q .title)"
+                # Match "from [>=~^]*X.Y.Z to [>=~^]*A.B.C", ignoring trailing " in /dir".
+                if [[ "$title" =~ from[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+)[^[:space:]]*[[:space:]]+to[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+) ]]; then
+                  from_major="${BASH_REMATCH[1]}"
+                  to_major="${BASH_REMATCH[3]}"
+                  if [[ "$from_major" == "$to_major" ]]; then
+                    allow=true
+                    reason="title-non-major:$from_major->$to_major"
                   else
-                    reason="unclassified-update-type"
+                    reason="title-major:$from_major->$to_major"
                   fi
-                  ;;
-              esac
+                else
+                  reason="unclassified-update-type"
+                fi
+              fi
               ;;
           esac
 
