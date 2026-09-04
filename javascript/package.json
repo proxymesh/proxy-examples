@@ -21,7 +21,7 @@
     "node-fetch": "^3.3.0",
     "nvm": "^0.0.4",
     "playwright": "^1.62.1",
-    "puppeteer": "^24.0.0",
+    "puppeteer": "^25.9.0",
     "socks-proxy-agent": "^8.0.0",
     "superagent": "^10.1.0",
     "typed-rest-client": "^2.2.0",
