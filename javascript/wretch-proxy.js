@@ -6,7 +6,7 @@
  *     PROXY_URL       - Proxy URL (required), e.g., http://user:pass@proxy:8080
  *     TEST_URL        - URL to request (default: https://api.ipify.org?format=json)
  *
- * Registers node-fetch + HttpsProxyAgent as wretch’s fetch polyfill for Node.
+ * Registers node-fetch + HttpsProxyAgent via wretch’s per-instance fetchPolyfill (wretch 3).
  */
 import wretch from 'wretch';
 import fetch from 'node-fetch';
@@ -35,10 +35,11 @@ function boundFetch(input, init = {}) {
     return fetch(input, { ...init, agent });
 }
 
-wretch.polyfills({ fetch: boundFetch });
-
 try {
-    const response = await wretch(testUrl).get().res();
+    const response = await wretch(testUrl)
+        .fetchPolyfill(boundFetch)
+        .get()
+        .res();
     const body = await response.text();
 
     console.log(`Status: ${response.status}`);
