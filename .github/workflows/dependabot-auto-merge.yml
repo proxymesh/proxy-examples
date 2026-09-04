@@ -26,24 +26,23 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
+      # v3.1.0+ restores update-type for pip/composer requirement bumps (no custom title parsing).
+      - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         id: meta
         with:
           # Branch updates add non-Dependabot merge commits; still parse Dependabot metadata.
           skip-commit-verification: true
 
-      # Decide eligibility without checking out PR code (GitHub API only).
-      # fetch-metadata often leaves update-type empty for pip requirement-range bumps
-      # ("Update X from >=a to >=b in /dir"). Fall back to prod-minor-patch group
-      # membership, otherwise same-major title parsing. Never short-circuit on
-      # dev-all (that group includes majors).
+      # Eligibility uses only fetch-metadata outputs (no PR code checkout, no title parsing):
+      # 1. Block explicit majors
+      # 2. Allow explicit minor/patch
+      # 3. If update-type is empty: allow only groups that exclude majors
+      # 4. Otherwise fail closed
       - name: Determine eligibility
         id: eligible
         env:
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           DEPENDENCY_GROUP: ${{ steps.meta.outputs.dependency-group }}
-          PR: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -59,28 +58,15 @@ jobs:
               reason="update-type:$UPDATE_TYPE"
               ;;
             *)
-              # Empty/unknown: only trust groups that exclude majors. `dev-all`
-              # includes majors, so never short-circuit on that group name —
-              # fall through to title parsing instead.
-              if [[ "$DEPENDENCY_GROUP" == "prod-minor-patch" ]]; then
-                allow=true
-                reason="dependency-group:$DEPENDENCY_GROUP"
-              else
-                title="$(gh pr view "$PR" --json title -q .title)"
-                # Match "from [>=~^]*X.Y.Z to [>=~^]*A.B.C", ignoring trailing " in /dir".
-                if [[ "$title" =~ from[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+)[^[:space:]]*[[:space:]]+to[[:space:]]+[^0-9v]*([0-9]+)\.([0-9]+) ]]; then
-                  from_major="${BASH_REMATCH[1]}"
-                  to_major="${BASH_REMATCH[3]}"
-                  if [[ "$from_major" == "$to_major" ]]; then
-                    allow=true
-                    reason="title-non-major:$from_major->$to_major"
-                  else
-                    reason="title-major:$from_major->$to_major"
-                  fi
-                else
+              case "$DEPENDENCY_GROUP" in
+                prod-minor-patch|dev-minor-patch)
+                  allow=true
+                  reason="dependency-group:$DEPENDENCY_GROUP"
+                  ;;
+                *)
                   reason="unclassified-update-type"
-                fi
-              fi
+                  ;;
+              esac
               ;;
           esac
 
