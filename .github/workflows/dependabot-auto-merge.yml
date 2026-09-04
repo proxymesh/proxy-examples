@@ -5,7 +5,7 @@
 # - Branch protection required status checks (reviews are satisfied by this workflow)
 # See: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
 #
-# Major version updates are left for human review (matches Dependabot grouping policy).
+# All Dependabot version updates (including majors) are auto-approved and auto-merged.
 
 name: dependabot-auto-merge
 
@@ -20,61 +20,13 @@ permissions:
 jobs:
   automerge:
     # Same-repo Dependabot PRs only. Key off the PR author so synchronize events from
-    # branch updates (non-Dependabot merge commits) still run.
+    # branch updates (non-Dependabot merge commits) still run. Never check out PR code.
     if: >
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      # v3.1.0+ restores update-type for pip/composer requirement bumps (no custom title parsing).
-      - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
-        id: meta
-        with:
-          # Branch updates add non-Dependabot merge commits; still parse Dependabot metadata.
-          skip-commit-verification: true
-
-      # Eligibility uses only fetch-metadata outputs (no PR code checkout, no title parsing):
-      # 1. Block explicit majors
-      # 2. Allow explicit minor/patch
-      # 3. If update-type is empty: allow only groups that exclude majors
-      # 4. Otherwise fail closed
-      - name: Determine eligibility
-        id: eligible
-        env:
-          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
-          DEPENDENCY_GROUP: ${{ steps.meta.outputs.dependency-group }}
-        run: |
-          set -euo pipefail
-
-          allow=false
-          reason="blocked"
-
-          case "$UPDATE_TYPE" in
-            version-update:semver-major)
-              reason="major-update-type"
-              ;;
-            version-update:semver-minor|version-update:semver-patch)
-              allow=true
-              reason="update-type:$UPDATE_TYPE"
-              ;;
-            *)
-              case "$DEPENDENCY_GROUP" in
-                prod-minor-patch|dev-minor-patch)
-                  allow=true
-                  reason="dependency-group:$DEPENDENCY_GROUP"
-                  ;;
-                *)
-                  reason="unclassified-update-type"
-                  ;;
-              esac
-              ;;
-          esac
-
-          echo "eligibility allow=$allow reason=$reason update_type=${UPDATE_TYPE:-<empty>} group=${DEPENDENCY_GROUP:-<empty>}"
-          echo "allow=$allow" >> "$GITHUB_OUTPUT"
-
       - name: Approve pull request
-        if: steps.eligible.outputs.allow == 'true'
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json reviewDecision -q .reviewDecision)" != "APPROVED" ]; then
@@ -85,7 +37,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
-        if: steps.eligible.outputs.allow == 'true'
         run: |
           set -euo pipefail
           if [ "$(gh pr view "$PR" --json autoMergeRequest -q '.autoMergeRequest != null')" != "true" ]; then

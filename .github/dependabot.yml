@@ -1,5 +1,7 @@
 version: 2
 updates:
+  # Grouping reduces PR noise; all version updates (including majors) auto-merge via
+  # .github/workflows/dependabot-auto-merge.yml once required checks pass.
   - package-ecosystem: "npm"
     directory: "/javascript"
     schedule:
@@ -17,7 +19,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      prod-major:
+        dependency-type: "production"
+        update-types:
+          - "major"
       dev-minor-patch:
         dependency-type: "development"
         update-types:
@@ -45,7 +50,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      prod-major:
+        dependency-type: "production"
+        update-types:
+          - "major"
       dev-minor-patch:
         dependency-type: "development"
         update-types:
@@ -73,7 +81,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      prod-major:
+        dependency-type: "production"
+        update-types:
+          - "major"
       dev-minor-patch:
         dependency-type: "development"
         update-types:
@@ -101,7 +112,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Majors stay out of auto-merge groups so group membership alone is a safe signal.
+      prod-major:
+        dependency-type: "production"
+        update-types:
+          - "major"
       dev-minor-patch:
         dependency-type: "development"
         update-types:
@@ -117,6 +131,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    labels:
+      - "dependencies"
+      - "automerge"
     groups:
       actions:
         patterns:
