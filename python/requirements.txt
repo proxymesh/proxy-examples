@@ -10,5 +10,5 @@ cloudscraper>=1.2.71
 autoscraper>=1.1.14
 # autoscraper 1.1.x fails build() with beautifulsoup4 4.13+ (empty learned list); keep 4.12.x
 beautifulsoup4>=4.15.0,<4.16
-lxml>=6.1.2
+lxml>=6.1.3
 scrapy>=2.18.0
