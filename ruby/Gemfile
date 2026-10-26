@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 
 ruby '>= 3.1'
 
-gem 'excon', '~> 1.7'
-gem 'faraday', '~> 2.14'
+gem 'excon', '~> 1.8'
+gem 'faraday', '~> 2.15'
 gem 'http', '~> 6.0'
 gem 'httpclient', '~> 2.9'
 gem 'httparty', '~> 0.24'
