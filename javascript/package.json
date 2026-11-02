@@ -28,7 +28,7 @@
     "wretch": "^3.0.9"
   },
   "overrides": {
-    "qs": "^6.16.0"
+    "qs": "^6.17.1"
   },
   "keywords": [
     "proxy",
