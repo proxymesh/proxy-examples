@@ -11,7 +11,7 @@ GEM
     ethon (0.19.1)
       ffi (>= 1.15.0)
       logger
-    excon (1.10.0)
+    excon (1.12.0)
     faraday (2.15.1)
       faraday-net_http (>= 2.0, < 3.6)
       json
@@ -115,7 +115,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  excon (~> 1.10)
+  excon (~> 1.12)
   faraday (~> 2.15)
   http (~> 6.0)
   httparty (~> 0.24)
@@ -133,7 +133,7 @@ CHECKSUMS
   csv (3.3.6) sha256=aba61e7e507a66f03d45cb1f3c4b6359861c3504038b422962875dce099e4456
   domain_name (0.7.20261007) sha256=0976c6ab837dbde991b433d03acc38fdb91fa8839df31a1ed75ce0318dc0441c
   ethon (0.19.1) sha256=f309dec67cfdefaf96b3d1ee0ed4f186eac518f131340f607bb3df3b4e13ddc4
-  excon (1.10.0) sha256=868d456c6db29f965d7cc6c5eddbb4d77df08e2a2b2dca7ca3547f2a55afc4b4
+  excon (1.12.0) sha256=ce2f4f12a44278479d132a94db544e42cb0683230a467ce80529b4ac805c579e
   faraday (2.15.1) sha256=8708154deda739c5e86cc42b74960e23e8491fce0eba9e11639a6a34b1ac288f
   faraday-net_http (3.5.0) sha256=2e7094c34e38754ee048cc3df47376f8657005d9375f8473bce1c3b526a22e36
   ffi (1.17.4-aarch64-linux-gnu) sha256=b208f06f91ffd8f5e1193da3cae3d2ccfc27fc36fba577baf698d26d91c080df
