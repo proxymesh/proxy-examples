@@ -186,8 +186,6 @@ php php/run_tests.php
 | [PHP Streams](https://www.php.net/manual/en/book.stream.php) | [streams_proxy.php](php/streams_proxy.php) | Built-in PHP streams (file_get_contents) |
 | [Amp HTTP](https://amphp.org/http-client) | [amphp_proxy.php](php/amphp_proxy.php) | Async HTTP client |
 
-> **Note:** See [php-proxy-headers](https://github.com/proxymeshai/php-proxy-headers) for extensions that add custom proxy header support.
-
 These examples use [Bundler](https://bundler.io/). Install Ruby development headers and libcurl first so native extensions can compile (Debian/Ubuntu: `ruby-dev` and `libcurl4-openssl-dev`; Fedora: `ruby-devel` and `libcurl-devel`).
 
 ```bash
@@ -237,6 +235,13 @@ Libraries above are actively maintained on RubyGems (releases within the last ye
 ## Related Documentation
 
 More examples and language-specific proxy-header tooling:
+
+### ProxyMesh docs
+
+* [Python proxy configuration](https://docs.proxymesh.com/article/4-python-proxy-configuration)
+* [JavaScript proxy configuration examples](https://docs.proxymesh.com/article/41-javascript-proxy-configuration-examples)
+* [Ruby proxy configuration examples](https://docs.proxymesh.com/article/117-ruby-proxy-configuration-examples)
+* [Proxy request and response headers](https://docs.proxymesh.com/article/7-request-response-headers)
 
 ### Python
 
